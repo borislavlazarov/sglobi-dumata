@@ -1,0 +1,160 @@
+{
+  "levels": [
+    {
+      "level": 1,
+      "obscure": "blur-light",
+      "extraLetters": 0,
+      "words": [
+        { "word": "ЛЪВ", "emoji": "🦁" },
+        { "word": "КОН", "emoji": "🐴" },
+        { "word": "НОС", "emoji": "👃" },
+        { "word": "ОКО", "emoji": "👁️" },
+        { "word": "СОК", "emoji": "🧃" },
+        { "word": "МЕД", "emoji": "🍯" }
+      ]
+    },
+    {
+      "level": 2,
+      "obscure": "blur-strong",
+      "extraLetters": 1,
+      "words": [
+        { "word": "КИТ", "emoji": "🐋" },
+        { "word": "РАК", "emoji": "🦀" },
+        { "word": "ЛЕД", "emoji": "🧊" },
+        { "word": "ЧАЙ", "emoji": "🍵" },
+        { "word": "ЗЪБ", "emoji": "🦷" },
+        { "word": "ШАЛ", "emoji": "🧣" }
+      ]
+    },
+    {
+      "level": 3,
+      "obscure": "silhouette",
+      "extraLetters": 1,
+      "words": [
+        { "word": "РИБА", "emoji": "🐟" },
+        { "word": "МЕЧЕ", "emoji": "🧸" },
+        { "word": "ЖАБА", "emoji": "🐸" },
+        { "word": "КОЛА", "emoji": "🚗" },
+        { "word": "ЛУНА", "emoji": "🌙" },
+        { "word": "ЗАЕК", "emoji": "🐰" }
+      ]
+    },
+    {
+      "level": 4,
+      "obscure": "blur-strong",
+      "extraLetters": 2,
+      "words": [
+        { "word": "КУЧЕ", "emoji": "🐶" },
+        { "word": "РОЗА", "emoji": "🌹" },
+        { "word": "ГЪБА", "emoji": "🍄" },
+        { "word": "ВЛАК", "emoji": "🚂" },
+        { "word": "ХЛЯБ", "emoji": "🍞" },
+        { "word": "КЛЮЧ", "emoji": "🔑" }
+      ]
+    },
+    {
+      "level": 5,
+      "obscure": "silhouette",
+      "extraLetters": 2,
+      "words": [
+        { "word": "ТОПКА", "emoji": "⚽" },
+        { "word": "КРУША", "emoji": "🍐" },
+        { "word": "БАНАН", "emoji": "🍌" },
+        { "word": "БАЛОН", "emoji": "🎈" },
+        { "word": "КНИГА", "emoji": "📖" },
+        { "word": "ЛОДКА", "emoji": "⛵" }
+      ]
+    },
+    {
+      "level": 6,
+      "obscure": "peephole-big",
+      "extraLetters": 2,
+      "words": [
+        { "word": "ЛИМОН", "emoji": "🍋" },
+        { "word": "ДОМАТ", "emoji": "🍅" },
+        { "word": "ЧАДЪР", "emoji": "☔" },
+        { "word": "ПАНДА", "emoji": "🐼" },
+        { "word": "ПЕТЕЛ", "emoji": "🐓" },
+        { "word": "ТИГЪР", "emoji": "🐯" }
+      ]
+    },
+    {
+      "level": 7,
+      "obscure": "peephole-small",
+      "extraLetters": 3,
+      "words": [
+        { "word": "ОБЛАК", "emoji": "☁️" },
+        { "word": "ЖИРАФ", "emoji": "🦒" },
+        { "word": "ЯБЪЛКА", "emoji": "🍎" },
+        { "word": "МОРКОВ", "emoji": "🥕" },
+        { "word": "КАМИОН", "emoji": "🚚" },
+        { "word": "ЗВЕЗДА", "emoji": "⭐" }
+      ]
+    },
+    {
+      "level": 8,
+      "obscure": "tiles",
+      "extraLetters": 3,
+      "words": [
+        { "word": "ЧЕРЕША", "emoji": "🍒" },
+        { "word": "ДЕЛФИН", "emoji": "🐬" },
+        { "word": "КИТАРА", "emoji": "🎸" },
+        { "word": "РАКЕТА", "emoji": "🚀" },
+        { "word": "КОЛЕЛО", "emoji": "🚲" },
+        { "word": "КАРТОФ", "emoji": "🥔" }
+      ]
+    },
+    {
+      "level": 9,
+      "obscure": "tiles",
+      "extraLetters": 3,
+      "words": [
+        { "word": "АНАНАС", "emoji": "🍍" },
+        { "word": "КАМИЛА", "emoji": "🐫" },
+        { "word": "ПИНГВИН", "emoji": "🐧" },
+        { "word": "ПАПАГАЛ", "emoji": "🦜" },
+        { "word": "ТЕЛЕФОН", "emoji": "📱" },
+        { "word": "САМОЛЕТ", "emoji": "✈️" }
+      ]
+    },
+    {
+      "level": 10,
+      "obscure": "peephole-small",
+      "extraLetters": 4,
+      "words": [
+        { "word": "МАЙМУНА", "emoji": "🐵" },
+        { "word": "КАЛИНКА", "emoji": "🐞" },
+        { "word": "ОКТОПОД", "emoji": "🐙" },
+        { "word": "ЛИНЕЙКА", "emoji": "🚑" },
+        { "word": "ПОЖАРНА", "emoji": "🚒" },
+        { "word": "ПАЛАТКА", "emoji": "⛺" }
+      ]
+    },
+    {
+      "level": 11,
+      "obscure": "mix",
+      "extraLetters": 4,
+      "words": [
+        { "word": "БАРАБАН", "emoji": "🥁" },
+        { "word": "КОКОШКА", "emoji": "🐔" },
+        { "word": "АВТОБУС", "emoji": "🚌" },
+        { "word": "СЛАДОЛЕД", "emoji": "🍦" },
+        { "word": "ПЕПЕРУДА", "emoji": "🦋" },
+        { "word": "СВЕТОФАР", "emoji": "🚦" }
+      ]
+    },
+    {
+      "level": 12,
+      "obscure": "mix",
+      "extraLetters": 4,
+      "words": [
+        { "word": "ТРАКТОР", "emoji": "🚜" },
+        { "word": "ФЛАМИНГО", "emoji": "🦩" },
+        { "word": "КОМПЮТЪР", "emoji": "💻" },
+        { "word": "СНЕЖИНКА", "emoji": "❄️" },
+        { "word": "ПОРТОКАЛ", "emoji": "🍊" },
+        { "word": "КАТЕРИЦА", "emoji": "🐿️" }
+      ]
+    }
+  ]
+}
