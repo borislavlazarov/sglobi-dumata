@@ -110,6 +110,9 @@ button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;t
 .lnode .minis{font-size:18px;line-height:1;margin-top:2px;letter-spacing:1px;}
 .lnode .minis .mfull{color:#FFC93C;text-shadow:0 0 2px #E8A100;}
 .lnode .minis .mempty{color:rgba(255,255,255,.85);}
+/* тъмен номер върху светлите възли (оранжево/жълто/зелено) — както при плочките */
+.lnode.c1 .num,.lnode.c2 .num,.lnode.c3 .num{color:var(--brown);text-shadow:0 2px 0 rgba(255,255,255,.35);}
+.lnode.c1 .mempty,.lnode.c2 .mempty,.lnode.c3 .mempty{color:rgba(0,0,0,.28);}
 .lnode.locked{background:var(--locked);--cd:#b0a28e;}
 .lnode.locked .num{opacity:.5;}
 .lnode .lock{position:absolute;top:-10px;right:-6px;font-size:28px;}
@@ -221,9 +224,9 @@ button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;t
 .tile.bhint{animation:bhint .6s ease;}
 @keyframes bhint{0%{transform:translateY(0);}25%{transform:translateY(-10px);}50%{transform:translateY(0);}75%{transform:translateY(-6px);}100%{transform:translateY(0);}}
 .tile.ghost{position:fixed;margin:0;z-index:60;transition:transform .38s ease-in-out;pointer-events:none;animation:none;}
-/* тесни екрани: 12 плочки да се събират на един ред (без самотна пренесена плочка) */
+/* тесни екрани: по-малък отстъп, но плочката никога не пада под 64px цел за докосване;
+   балансираното пренасяне (6+6 вместо 11+1) се прави в balanceTray() */
 @media (max-width:1100px){
-  :root{--tile:clamp(56px,6.6vw,64px);}
   #trayRow{gap:8px;}
 }
 
@@ -566,7 +569,27 @@ function buildTray(){
     attachTilePointer(t);
     elTray.appendChild(t);
   });
+  balanceTray();
 }
+/* ако всички плочки не се събират на един ред, ограничаваме ширината на таблата,
+   за да се пренесат балансирано (6+6), а не със самотна плочка на втория ред */
+function balanceTray(){
+  elTray.style.maxWidth="";
+  const tiles=elTray.querySelectorAll(".tile:not(.taken)");
+  const n=tiles.length;
+  if(!n) return;
+  /* екранът може още да не е показан (renderPlay тече преди show) — изчакваме кадър */
+  const avail=(elTray.parentElement?elTray.parentElement.clientWidth:0)-32;
+  if(avail<=0){requestAnimationFrame(balanceTray);return;}
+  const gap=parseFloat(getComputedStyle(elTray).gap)||12;
+  /* computed width, не getBoundingClientRect — popin анимацията мащабира от scale(0) */
+  const tw=parseFloat(getComputedStyle(tiles[0]).width)||72;
+  if(n*tw+(n-1)*gap>avail){
+    const per=Math.ceil(n/2);
+    elTray.style.maxWidth=(per*tw+(per-1)*gap+2)+"px";
+  }
+}
+window.addEventListener("resize",balanceTray);
 function removeTileEl(el){
   if(!el) return;
   el.style.transform="";
@@ -609,8 +632,10 @@ function applyReveal(){
     case "peephole-small":
       elEmoji.style.clipPath="circle("+(8+67*r).toFixed(1)+"% at 50% 50%)";break;
     case "tiles":{
-      /* 9-ата плочка пада чак при reveal===1 — картинката не се издава предсрочно */
-      const gone=r>=1?9:Math.min(8,Math.floor(9*r));
+      /* reveal 0.1→0.8 се изобразява линейно върху 0→8 паднали плочки, така че
+         всяка вярна буква маха поне една (и при 8-буквена дума — точно една);
+         9-ата плочка пада чак при reveal===1 — картинката не се издава предсрочно */
+      const gone=r>=1?9:Math.max(0,Math.min(8,Math.floor((r-0.1)/0.7*8+1e-6)));
       let k=0;
       for(let i=0;i<gone&&i<9;i++){
         const c=elOverlay.children[S.tileOrder[i]];
