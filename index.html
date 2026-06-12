@@ -71,7 +71,9 @@ button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;t
   background:rgba(255,255,255,.6);opacity:.4;font-size:20px;display:flex;align-items:center;justify-content:center;
   transition:transform .2s,opacity .2s;
 }
-#btnReset.holding{opacity:1;transform:scale(1.25);background:#FFC9C9;}
+/* нарочно БЕЗ възнаграждаваща анимация при задържане — родителски жест */
+#btnReset.holding{opacity:.55;}
+#btnReset.armed{opacity:.55;background:rgba(255,255,255,.75);}
 
 /* ============================== MASCOT ============================== */
 .mascot{
@@ -92,6 +94,7 @@ button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;t
 #scrHome .mascot{margin:6px 0;z-index:2;}
 #scrMap .mascot{position:absolute;left:18px;bottom:18px;width:96px;height:96px;}
 #scrMap .mascot .owl{font-size:70px;}
+#scrWin .mascot{position:absolute;left:18px;bottom:18px;}
 
 /* ============================== MAP ============================== */
 #mapArea{position:absolute;inset:0;}
@@ -188,6 +191,10 @@ button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;t
 .slot.next{animation:slotpulse 1.6s ease-in-out infinite;}
 @keyframes slotpulse{0%,100%{border-color:#E8975A;}50%{border-color:#FF8A5C;}}
 .slot.filled{border-style:solid;border-color:transparent;animation:none;box-shadow:0 4px 0 var(--cd);}
+/* цветният фон на запълнен слот трябва да бие .slot (еднаква специфичност при .cN) */
+.slot.filled.c0{background:var(--c0);} .slot.filled.c1{background:var(--c1);}
+.slot.filled.c2{background:var(--c2);} .slot.filled.c3{background:var(--c3);}
+.slot.filled.c4{background:var(--c4);} .slot.filled.c5{background:var(--c5);}
 .slot.pop{animation:slotpop .26s ease;}
 @keyframes slotpop{0%{transform:scale(1);}50%{transform:scale(1.18);}100%{transform:scale(1);}}
 #trayRow{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding-bottom:8px;min-height:calc(var(--tile) + 10px);}
@@ -200,6 +207,11 @@ button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;t
   cursor:pointer;touch-action:none;
   transition:width .2s ease,transform .12s ease,opacity .15s ease;
 }
+/* тъмен текст върху светлите плочки (оранжево/жълто/зелено) — контраст ≥3:1 за буквите */
+.tile.c1,.tile.c2,.tile.c3,
+.slot.filled.c1,.slot.filled.c2,.slot.filled.c3{
+  color:var(--brown);text-shadow:0 2px 0 rgba(255,255,255,.35);
+}
 .tile:hover{transform:scale(1.08);}
 .tile.pressed{transform:scale(.92);}
 .tile.dragging{z-index:40;position:relative;transition:none;}
@@ -209,6 +221,11 @@ button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;t
 .tile.bhint{animation:bhint .6s ease;}
 @keyframes bhint{0%{transform:translateY(0);}25%{transform:translateY(-10px);}50%{transform:translateY(0);}75%{transform:translateY(-6px);}100%{transform:translateY(0);}}
 .tile.ghost{position:fixed;margin:0;z-index:60;transition:transform .38s ease-in-out;pointer-events:none;animation:none;}
+/* тесни екрани: 12 плочки да се събират на един ред (без самотна пренесена плочка) */
+@media (max-width:1100px){
+  :root{--tile:clamp(56px,6.6vw,64px);}
+  #trayRow{gap:8px;}
+}
 
 /* ============================== WIN ============================== */
 #winEmoji{font-size:220px;line-height:1.1;animation:breathe 2s ease-in-out infinite;}
@@ -299,6 +316,7 @@ button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;t
   <div id="winWord"></div>
   <div id="winStars"></div>
   <button id="btnNext" aria-label="напред"><span>НАПРЕД</span><span class="arr">▶</span></button>
+  <div class="mascot dance"><span class="owl">🦉</span></div>
 </section>
 
 <!-- ============================== LEVEL END ============================== -->
@@ -322,35 +340,35 @@ button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;t
 const LEVELS = [
   {level:1, obscure:"blur-light", extraLetters:0, words:[
     {word:"ЛЪВ",emoji:"🦁"},{word:"КОН",emoji:"🐴"},{word:"НОС",emoji:"👃"},
-    {word:"ДОМ",emoji:"🏠"},{word:"СОК",emoji:"🧃"},{word:"МЕД",emoji:"🍯"}]},
-  {level:2, obscure:"blur-light", extraLetters:1, words:[
+    {word:"ЛУК",emoji:"🧅"},{word:"СОК",emoji:"🧃"},{word:"МЕД",emoji:"🍯"}]},
+  {level:2, obscure:"blur-strong", extraLetters:1, words:[
     {word:"КИТ",emoji:"🐋"},{word:"РАК",emoji:"🦀"},{word:"ЛЕД",emoji:"🧊"},
     {word:"ЧАЙ",emoji:"🍵"},{word:"ЗЪБ",emoji:"🦷"},{word:"ШАЛ",emoji:"🧣"}]},
-  {level:3, obscure:"blur-light", extraLetters:1, words:[
+  {level:3, obscure:"silhouette", extraLetters:1, words:[
     {word:"РИБА",emoji:"🐟"},{word:"МЕЧЕ",emoji:"🧸"},{word:"ЖАБА",emoji:"🐸"},
     {word:"КОЛА",emoji:"🚗"},{word:"ЛУНА",emoji:"🌙"},{word:"ЗАЕК",emoji:"🐰"}]},
-  {level:4, obscure:"peephole-big", extraLetters:1, words:[
+  {level:4, obscure:"blur-strong", extraLetters:2, words:[
     {word:"КУЧЕ",emoji:"🐶"},{word:"РОЗА",emoji:"🌹"},{word:"ГЪБА",emoji:"🍄"},
     {word:"ВЛАК",emoji:"🚂"},{word:"ХЛЯБ",emoji:"🍞"},{word:"КЛЮЧ",emoji:"🔑"}]},
-  {level:5, obscure:"silhouette", extraLetters:1, words:[
+  {level:5, obscure:"silhouette", extraLetters:2, words:[
     {word:"ТОПКА",emoji:"⚽"},{word:"КРУША",emoji:"🍐"},{word:"БАНАН",emoji:"🍌"},
     {word:"БАЛОН",emoji:"🎈"},{word:"КНИГА",emoji:"📖"},{word:"ЛОДКА",emoji:"⛵"}]},
   {level:6, obscure:"peephole-big", extraLetters:2, words:[
     {word:"ЛИМОН",emoji:"🍋"},{word:"ДОМАТ",emoji:"🍅"},{word:"ЧАДЪР",emoji:"☔"},
     {word:"ПАНДА",emoji:"🐼"},{word:"ПЕТЕЛ",emoji:"🐓"},{word:"ТИГЪР",emoji:"🐯"}]},
-  {level:7, obscure:"silhouette", extraLetters:2, words:[
+  {level:7, obscure:"peephole-small", extraLetters:3, words:[
     {word:"ОБЛАК",emoji:"☁️"},{word:"ЖИРАФ",emoji:"🦒"},{word:"ЯБЪЛКА",emoji:"🍎"},
     {word:"МОРКОВ",emoji:"🥕"},{word:"КАМИОН",emoji:"🚚"},{word:"ЗВЕЗДА",emoji:"⭐"}]},
-  {level:8, obscure:"tiles", extraLetters:2, words:[
+  {level:8, obscure:"tiles", extraLetters:3, words:[
     {word:"ЧЕРЕША",emoji:"🍒"},{word:"ДЕЛФИН",emoji:"🐬"},{word:"КИТАРА",emoji:"🎸"},
     {word:"РАКЕТА",emoji:"🚀"},{word:"КОЛЕЛО",emoji:"🚲"},{word:"КАРТОФ",emoji:"🥔"}]},
-  {level:9, obscure:"tiles", extraLetters:2, words:[
+  {level:9, obscure:"tiles", extraLetters:3, words:[
     {word:"АНАНАС",emoji:"🍍"},{word:"КАМИЛА",emoji:"🐫"},{word:"ПИНГВИН",emoji:"🐧"},
     {word:"ПАПАГАЛ",emoji:"🦜"},{word:"ТЕЛЕФОН",emoji:"📱"},{word:"САМОЛЕТ",emoji:"✈️"}]},
-  {level:10, obscure:"peephole-small", extraLetters:3, words:[
+  {level:10, obscure:"peephole-small", extraLetters:4, words:[
     {word:"МАЙМУНА",emoji:"🐵"},{word:"КАЛИНКА",emoji:"🐞"},{word:"ОКТОПОД",emoji:"🐙"},
     {word:"ЛИНЕЙКА",emoji:"🚑"},{word:"ПОЖАРНА",emoji:"🚒"},{word:"ПАЛАТКА",emoji:"⛺"}]},
-  {level:11, obscure:"mix", extraLetters:3, words:[
+  {level:11, obscure:"mix", extraLetters:4, words:[
     {word:"БАРАБАН",emoji:"🥁"},{word:"КОКОШКА",emoji:"🐔"},{word:"АВТОБУС",emoji:"🚌"},
     {word:"СЛАДОЛЕД",emoji:"🍦"},{word:"ПЕПЕРУДА",emoji:"🦋"},{word:"СВЕТОФАР",emoji:"🚦"}]},
   {level:12, obscure:"mix", extraLetters:4, words:[
@@ -591,7 +609,8 @@ function applyReveal(){
     case "peephole-small":
       elEmoji.style.clipPath="circle("+(8+67*r).toFixed(1)+"% at 50% 50%)";break;
     case "tiles":{
-      const gone=Math.round(9*r);
+      /* 9-ата плочка пада чак при reveal===1 — картинката не се издава предсрочно */
+      const gone=r>=1?9:Math.min(8,Math.floor(9*r));
       let k=0;
       for(let i=0;i<gone&&i<9;i++){
         const c=elOverlay.children[S.tileOrder[i]];
@@ -995,15 +1014,25 @@ byId("btnAgain").addEventListener("pointerdown",e=>{e.preventDefault();sndTap();
 byId("btnNextLevel").addEventListener("pointerdown",e=>{e.preventDefault();sndTap();if(S.level<12)actOpenLevel(S.level+1);});
 document.querySelectorAll(".sndbtn").forEach(b=>b.addEventListener("pointerdown",e=>{e.preventDefault();toggleSound();}));
 
-/* „изтрий прогреса" — изисква задържане 2s */
+/* „изтрий прогреса" — родителски жест: задържане 5s, после потвърждение
+   с второ задържане 2s върху появилото се ✔ (иначе се отказва след 4s) */
 (function(){
   const b=byId("btnReset");
-  let t=null;
+  let t=null,armTimer=null,armed=false;
+  const disarm=()=>{armed=false;if(armTimer){clearTimeout(armTimer);armTimer=null;}b.textContent="♻";b.classList.remove("armed");};
   const cancel=()=>{if(t){clearTimeout(t);t=null;}b.classList.remove("holding");};
   b.addEventListener("pointerdown",e=>{
     e.preventDefault();
     b.classList.add("holding");
-    t=setTimeout(()=>{cancel();sndTap();actReset();},2000);
+    if(!armed){
+      t=setTimeout(()=>{
+        cancel();
+        armed=true;b.textContent="✔";b.classList.add("armed");
+        armTimer=setTimeout(disarm,4000);
+      },5000);
+    }else{
+      t=setTimeout(()=>{cancel();disarm();sndTap();actReset();},2000);
+    }
   });
   b.addEventListener("pointerup",cancel);
   b.addEventListener("pointerleave",cancel);
