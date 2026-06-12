@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>СГЛОБИ ДУМАТА</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧩</text></svg>">
+<style>
+/* ============================== BASE ============================== */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;margin:0;padding:0;overflow:hidden;}
+body{
+  font-family:'Comic Sans MS','Chalkboard SE','Segoe UI Rounded','Segoe UI',system-ui,sans-serif;
+  background:linear-gradient(160deg,#FFF3B0 0%,#FFD6A5 45%,#FFADAD 100%);
+  color:#6B4226;
+  user-select:none;-webkit-user-select:none;
+  touch-action:manipulation;
+  text-transform:uppercase;
+}
+button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;}
+:root{
+  --brown:#6B4226;--orange:#FF8A5C;--orange-d:#F2784B;--green:#51CF66;--green-d:#40C057;
+  --locked:#C9BBA8;
+  --c0:#FF6B6B;--c1:#FFA94D;--c2:#FFD43B;--c3:#69DB7C;--c4:#4DABF7;--c5:#B197FC;
+  --d0:#E03131;--d1:#E8590C;--d2:#F08C00;--d3:#2F9E44;--d4:#1971C2;--d5:#7048E8;
+  --tile:clamp(64px,7vw,72px);
+  --slot:clamp(56px,7.5vw,76px);
+  --card:clamp(160px,34vh,280px);
+}
+.c0{background:var(--c0);--cd:var(--d0);} .c1{background:var(--c1);--cd:var(--d1);}
+.c2{background:var(--c2);--cd:var(--d2);} .c3{background:var(--c3);--cd:var(--d3);}
+.c4{background:var(--c4);--cd:var(--d4);} .c5{background:var(--c5);--cd:var(--d5);}
+
+/* ============================== SCREENS ============================== */
+.screen{position:fixed;inset:0;display:none;}
+.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;animation:screenin .3s ease-out;}
+@keyframes screenin{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+
+/* ============================== BUTTONS ============================== */
+.rbtn{
+  width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.75);
+  font-size:30px;line-height:1;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 12px rgba(180,90,40,.25);transition:transform .12s;color:var(--brown);
+}
+.rbtn:active{transform:scale(.92);}
+.top-right{position:absolute;top:16px;right:16px;}
+.top-left{position:absolute;top:16px;left:16px;}
+
+/* ============================== HOME ============================== */
+#scrHome .title{
+  font-size:clamp(48px,8vw,96px);color:#6B4226;margin:0 0 8px;
+  text-shadow:0 4px 0 rgba(255,255,255,.6);text-align:center;z-index:2;
+}
+.floaty{
+  position:absolute;width:64px;height:64px;border-radius:20px;color:#fff;
+  font-size:38px;font-weight:bold;display:flex;align-items:center;justify-content:center;
+  opacity:.35;animation:floaty 6s ease-in-out infinite alternate;z-index:0;pointer-events:none;
+  text-shadow:0 2px 0 rgba(0,0,0,.18);
+}
+@keyframes floaty{from{transform:translateY(-14px) rotate(-6deg);}to{transform:translateY(14px) rotate(6deg);}}
+#btnPlay{
+  width:140px;height:140px;border-radius:50%;background:var(--orange);color:#fff;
+  font-size:64px;display:flex;align-items:center;justify-content:center;padding-left:10px;
+  box-shadow:0 10px 0 #e0673c,0 14px 28px rgba(180,90,40,.35);
+  animation:pulse 1.8s ease-in-out infinite;z-index:2;margin-top:18px;
+}
+#btnPlay:active{background:var(--orange-d);transform:scale(.92);animation:none;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+#btnReset{
+  position:absolute;bottom:14px;right:14px;width:40px;height:40px;border-radius:50%;
+  background:rgba(255,255,255,.6);opacity:.4;font-size:20px;display:flex;align-items:center;justify-content:center;
+  transition:transform .2s,opacity .2s;
+}
+/* нарочно БЕЗ възнаграждаваща анимация при задържане — родителски жест */
+#btnReset.holding{opacity:.55;}
+#btnReset.armed{opacity:.55;background:rgba(255,255,255,.75);}
+
+/* ============================== MASCOT ============================== */
+.mascot{
+  width:112px;height:112px;border-radius:50%;background:rgba(255,255,255,.5);
+  display:flex;align-items:center;justify-content:center;z-index:3;
+  box-shadow:0 6px 16px rgba(180,90,40,.2);
+}
+.mascot .owl{font-size:84px;line-height:1;display:inline-block;animation:midle 2.4s ease-in-out infinite;}
+@keyframes midle{0%,100%{transform:translateY(-4px);}50%{transform:translateY(4px);}}
+.owl.m-hi{animation:mhi .7s ease;}
+@keyframes mhi{0%{transform:rotate(0) scale(1);}30%{transform:rotate(-8deg) scale(1.1);}60%{transform:rotate(8deg) scale(1.1);}100%{transform:rotate(0) scale(1);}}
+.owl.m-joy{animation:mjoy .35s ease;}
+@keyframes mjoy{0%,100%{transform:translateY(0) rotate(0);}50%{transform:translateY(-14px) rotate(6deg);}}
+.owl.m-sad{animation:msad .5s ease;}
+@keyframes msad{0%,100%{transform:rotate(0) scale(1);}40%{transform:rotate(-12deg) scale(.95);}}
+.mascot.dance .owl{animation:mdance .6s ease-in-out infinite alternate;}
+@keyframes mdance{from{transform:rotate(-10deg) translateY(-8px);}to{transform:rotate(10deg) translateY(0);}}
+#scrHome .mascot{margin:6px 0;z-index:2;}
+#scrMap .mascot{position:absolute;left:18px;bottom:18px;width:96px;height:96px;}
+#scrMap .mascot .owl{font-size:70px;}
+#scrWin .mascot{position:absolute;left:18px;bottom:18px;}
+
+/* ============================== MAP ============================== */
+#mapArea{position:absolute;inset:0;}
+.pathdot{position:absolute;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.6);transform:translate(-50%,-50%);}
+.lnode{
+  position:absolute;width:88px;height:88px;border-radius:50%;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:#fff;cursor:pointer;box-shadow:0 6px 0 var(--cd),0 8px 16px rgba(0,0,0,.15);
+  transition:transform .12s;
+}
+.lnode:active{transform:translate(-50%,-50%) scale(.92);}
+.lnode .num{font-size:36px;font-weight:bold;line-height:1;text-shadow:0 2px 0 rgba(0,0,0,.18);}
+.lnode .minis{font-size:18px;line-height:1;margin-top:2px;letter-spacing:1px;}
+.lnode .minis .mfull{color:#FFC93C;text-shadow:0 0 2px #E8A100;}
+.lnode .minis .mempty{color:rgba(255,255,255,.85);}
+/* тъмен номер върху светлите възли (оранжево/жълто/зелено) — както при плочките */
+.lnode.c1 .num,.lnode.c2 .num,.lnode.c3 .num{color:var(--brown);text-shadow:0 2px 0 rgba(255,255,255,.35);}
+.lnode.c1 .mempty,.lnode.c2 .mempty,.lnode.c3 .mempty{color:rgba(0,0,0,.28);}
+.lnode.locked{background:var(--locked);--cd:#b0a28e;}
+.lnode.locked .num{opacity:.5;}
+.lnode .lock{position:absolute;top:-10px;right:-6px;font-size:28px;}
+.lnode.cur{animation:ringpulse 1.6s ease-out infinite;}
+@keyframes ringpulse{
+  0%{box-shadow:0 6px 0 var(--cd),0 8px 16px rgba(0,0,0,.15),0 0 0 0 rgba(255,255,255,.75);}
+  70%{box-shadow:0 6px 0 var(--cd),0 8px 16px rgba(0,0,0,.15),0 0 0 18px rgba(255,255,255,0);}
+  100%{box-shadow:0 6px 0 var(--cd),0 8px 16px rgba(0,0,0,.15),0 0 0 0 rgba(255,255,255,0);}
+}
+.shake{animation:shake .42s ease;}
+@keyframes shake{
+  0%{transform:translateX(0) rotate(0);}15%{transform:translateX(-8px) rotate(-4deg);}
+  35%{transform:translateX(8px) rotate(4deg);}55%{transform:translateX(-6px) rotate(-3deg);}
+  75%{transform:translateX(6px) rotate(3deg);}100%{transform:translateX(0) rotate(0);}
+}
+.lnode.shake{animation:nshake .42s ease;}
+@keyframes nshake{
+  0%{transform:translate(-50%,-50%);}15%{transform:translate(-50%,-50%) translateX(-8px) rotate(-4deg);}
+  35%{transform:translate(-50%,-50%) translateX(8px) rotate(4deg);}55%{transform:translate(-50%,-50%) translateX(-6px) rotate(-3deg);}
+  75%{transform:translate(-50%,-50%) translateX(6px) rotate(3deg);}100%{transform:translate(-50%,-50%);}
+}
+
+/* ============================== PLAY ============================== */
+#scrPlay.active{
+  display:grid;grid-template-rows:72px minmax(160px,1fr) auto auto;
+  padding:16px;gap:12px;align-items:center;justify-items:center;
+}
+.playbar{
+  width:100%;height:72px;display:grid;grid-template-columns:64px 1fr 64px;align-items:center;
+}
+.playbar .rbtn{position:static;}
+#wordDots{display:flex;gap:10px;justify-content:center;}
+.wdot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.5);}
+.wdot.done{background:#51CF66;}
+.wdot.cur{background:#FF8A5C;animation:dotpulse 1.6s ease-in-out infinite;}
+@keyframes dotpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.45);}}
+#picZone{position:relative;width:100%;height:100%;min-height:160px;display:flex;align-items:center;justify-content:center;}
+#picWrap{display:flex;align-items:center;gap:20px;}
+#picCard{
+  width:var(--card);height:var(--card);background:#fff;border-radius:28px;
+  box-shadow:0 8px 24px rgba(180,90,40,.25);overflow:hidden;position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+#picEmoji{
+  font-size:calc(var(--card)*.72);line-height:1;z-index:1;
+  transition:filter .5s ease-out,clip-path .5s ease-out;
+}
+#picEmoji.notrans{transition:none;}
+#tilesOverlay{position:absolute;inset:0;display:none;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:3px;padding:3px;z-index:2;}
+#tilesOverlay.on{display:grid;}
+.cover{border-radius:8px;transition:transform .35s ease,opacity .35s ease;}
+.cover.gone{transform:scale(0) rotate(90deg);opacity:0;}
+#hintCol{display:flex;flex-direction:column;align-items:center;gap:16px;}
+.hintbtn{
+  width:88px;height:88px;border-radius:50%;color:#fff;font-size:44px;
+  display:flex;align-items:center;justify-content:center;transition:transform .12s,opacity .3s,filter .3s;
+  text-shadow:0 2px 0 rgba(0,0,0,.18);
+}
+.hintbtn:active{transform:scale(.92);}
+#btnEye{background:#4DABF7;box-shadow:0 6px 0 #1971C2,0 8px 16px rgba(0,0,0,.15);}
+#btnLetter{background:#B197FC;box-shadow:0 6px 0 #7048E8,0 8px 16px rgba(0,0,0,.15);font-size:40px;font-weight:bold;}
+.hintbtn.off{filter:saturate(.2);opacity:.45;pointer-events:none;}
+#hintDots{display:flex;gap:8px;}
+#hintDots i{width:14px;height:14px;border-radius:50%;background:#FFC93C;}
+#hintDots i.used{background:#C9BBA8;}
+#mascotPlay{position:absolute;left:6px;bottom:0;width:96px;height:96px;}
+#mascotPlay .owl{font-size:70px;}
+@media (max-width:900px){
+  #mascotPlay{width:64px;height:64px;}
+  #mascotPlay .owl{font-size:46px;}
+}
+#slotsRow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.slot{
+  width:var(--slot);height:var(--slot);border-radius:20px;
+  background:rgba(255,255,255,.55);border:3px dashed #E8975A;
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(36px,4.5vw,44px);font-weight:bold;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.18);
+}
+.slot.next{animation:slotpulse 1.6s ease-in-out infinite;}
+@keyframes slotpulse{0%,100%{border-color:#E8975A;}50%{border-color:#FF8A5C;}}
+.slot.filled{border-style:solid;border-color:transparent;animation:none;box-shadow:0 4px 0 var(--cd);}
+/* цветният фон на запълнен слот трябва да бие .slot (еднаква специфичност при .cN) */
+.slot.filled.c0{background:var(--c0);} .slot.filled.c1{background:var(--c1);}
+.slot.filled.c2{background:var(--c2);} .slot.filled.c3{background:var(--c3);}
+.slot.filled.c4{background:var(--c4);} .slot.filled.c5{background:var(--c5);}
+.slot.pop{animation:slotpop .26s ease;}
+@keyframes slotpop{0%{transform:scale(1);}50%{transform:scale(1.18);}100%{transform:scale(1);}}
+#trayRow{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding-bottom:8px;min-height:calc(var(--tile) + 10px);}
+.tile{
+  width:var(--tile);height:var(--tile);border-radius:20px;color:#fff;
+  font-size:clamp(40px,4.8vw,44px);font-weight:bold;line-height:1;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  text-shadow:0 2px 0 rgba(0,0,0,.18);
+  box-shadow:0 6px 0 var(--cd),0 8px 16px rgba(0,0,0,.15);
+  cursor:pointer;touch-action:none;
+  transition:width .2s ease,transform .12s ease,opacity .15s ease;
+}
+/* тъмен текст върху светлите плочки (оранжево/жълто/зелено) — контраст ≥3:1 за буквите */
+.tile.c1,.tile.c2,.tile.c3,
+.slot.filled.c1,.slot.filled.c2,.slot.filled.c3{
+  color:var(--brown);text-shadow:0 2px 0 rgba(255,255,255,.35);
+}
+.tile:hover{transform:scale(1.08);}
+.tile.pressed{transform:scale(.92);}
+.tile.dragging{z-index:40;position:relative;transition:none;}
+.tile.popin{animation:popin .32s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes popin{0%{transform:scale(0);}70%{transform:scale(1.08);}100%{transform:scale(1);}}
+.tile.taken{width:0!important;min-width:0!important;margin:0!important;padding:0!important;opacity:0;visibility:hidden;pointer-events:none;}
+.tile.bhint{animation:bhint .6s ease;}
+@keyframes bhint{0%{transform:translateY(0);}25%{transform:translateY(-10px);}50%{transform:translateY(0);}75%{transform:translateY(-6px);}100%{transform:translateY(0);}}
+.tile.ghost{position:fixed;margin:0;z-index:60;transition:transform .38s ease-in-out;pointer-events:none;animation:none;}
+/* тесни екрани: по-малък отстъп, но плочката никога не пада под 64px цел за докосване;
+   балансираното пренасяне (6+6 вместо 11+1) се прави в balanceTray() */
+@media (max-width:1100px){
+  #trayRow{gap:8px;}
+}
+
+/* ============================== WIN ============================== */
+#winEmoji{font-size:220px;line-height:1.1;animation:breathe 2s ease-in-out infinite;}
+@keyframes breathe{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
+#winWord{display:flex;gap:10px;margin:18px 0 8px;flex-wrap:wrap;justify-content:center;}
+.wtile{animation:winb 2.5s ease infinite;cursor:default;touch-action:manipulation;}
+@keyframes winb{0%{transform:translateY(0);}5%{transform:translateY(-16px);}11%{transform:translateY(0);}100%{transform:translateY(0);}}
+#winStars{display:flex;gap:14px;height:70px;align-items:center;margin:4px 0 14px;}
+.star{color:#FFC93C;-webkit-text-stroke:2px #E8A100;display:inline-block;transform:scale(0);line-height:1;}
+.star.shown{transform:scale(1);animation:popin .32s cubic-bezier(.34,1.56,.64,1);}
+.star.empty{color:#fff;-webkit-text-stroke:2px #E0C9A0;}
+.star.big{font-size:56px;}
+.star.huge{font-size:88px;}
+#btnNext{
+  min-width:280px;min-height:96px;border-radius:28px;background:var(--green);color:#fff;
+  font-size:42px;font-weight:bold;display:flex;align-items:center;justify-content:center;gap:16px;
+  box-shadow:0 8px 0 #2F9E44,0 12px 24px rgba(0,0,0,.18);transition:transform .12s;
+  text-shadow:0 2px 0 rgba(0,0,0,.18);
+}
+#btnNext:active{background:var(--green-d);transform:scale(.92);}
+#btnNext .arr{font-size:48px;}
+
+/* ============================== LEVEL END ============================== */
+#endTitle{font-size:clamp(40px,6vw,72px);font-weight:bold;text-shadow:0 4px 0 rgba(255,255,255,.6);margin-bottom:8px;}
+#scrEnd .mascot{width:150px;height:150px;margin:10px 0;}
+#scrEnd .mascot .owl{font-size:110px;}
+#endStars{display:flex;gap:20px;height:104px;align-items:center;margin:8px 0 20px;}
+#endBtns{display:flex;gap:24px;}
+.endbtn{
+  min-width:120px;min-height:96px;border-radius:28px;font-size:48px;
+  display:flex;align-items:center;justify-content:center;color:#fff;transition:transform .12s;
+}
+.endbtn:active{transform:scale(.92);}
+#btnAgain{background:#FFA94D;box-shadow:0 8px 0 #E8590C,0 12px 24px rgba(0,0,0,.15);}
+#btnEndMap{background:#4DABF7;box-shadow:0 8px 0 #1971C2,0 12px 24px rgba(0,0,0,.15);}
+#btnNextLevel{background:var(--green);box-shadow:0 8px 0 #2F9E44,0 12px 24px rgba(0,0,0,.15);}
+</style>
+</head>
+<body>
+
+<!-- ============================== HOME ============================== -->
+<section id="scrHome" class="screen active">
+  <div id="floaties"></div>
+  <h1 class="title">СГЛОБИ ДУМАТА</h1>
+  <div class="mascot" id="mascotHome"><span class="owl">🦉</span></div>
+  <button id="btnPlay" aria-label="играй">▶</button>
+  <button class="rbtn sndbtn top-right" aria-label="звук">🔊</button>
+  <button id="btnReset" aria-label="изтрий прогреса">♻</button>
+</section>
+
+<!-- ============================== MAP ============================== -->
+<section id="scrMap" class="screen">
+  <div id="mapArea"></div>
+  <button id="btnHome" class="rbtn top-left" aria-label="начало">⌂</button>
+  <button class="rbtn sndbtn top-right" aria-label="звук">🔊</button>
+  <div class="mascot"><span class="owl">🦉</span></div>
+</section>
+
+<!-- ============================== PLAY ============================== -->
+<section id="scrPlay" class="screen">
+  <div class="playbar">
+    <button id="btnBack" class="rbtn" aria-label="карта">🗺</button>
+    <div id="wordDots"></div>
+    <button class="rbtn sndbtn" aria-label="звук">🔊</button>
+  </div>
+  <div id="picZone">
+    <div id="picWrap">
+      <div id="picCard">
+        <div id="picEmoji"></div>
+        <div id="tilesOverlay"></div>
+      </div>
+      <div id="hintCol">
+        <button id="btnEye" class="hintbtn" aria-label="подсказка око">👁</button>
+        <div id="hintDots"><i></i><i></i></div>
+        <button id="btnLetter" class="hintbtn" aria-label="подсказка буква">А?</button>
+      </div>
+    </div>
+    <div class="mascot" id="mascotPlay"><span class="owl">🦉</span></div>
+  </div>
+  <div id="slotsRow"></div>
+  <div id="trayRow"></div>
+</section>
+
+<!-- ============================== WIN ============================== -->
+<section id="scrWin" class="screen">
+  <button class="rbtn sndbtn top-right" aria-label="звук">🔊</button>
+  <div id="winEmoji"></div>
+  <div id="winWord"></div>
+  <div id="winStars"></div>
+  <button id="btnNext" aria-label="напред"><span>НАПРЕД</span><span class="arr">▶</span></button>
+  <div class="mascot dance"><span class="owl">🦉</span></div>
+</section>
+
+<!-- ============================== LEVEL END ============================== -->
+<section id="scrEnd" class="screen">
+  <button class="rbtn sndbtn top-right" aria-label="звук">🔊</button>
+  <div id="endTitle"></div>
+  <div class="mascot dance"><span class="owl">🦉</span></div>
+  <div id="endStars"></div>
+  <div id="endBtns">
+    <button id="btnAgain" class="endbtn" aria-label="пак">🔁</button>
+    <button id="btnEndMap" class="endbtn" aria-label="карта">🗺</button>
+    <button id="btnNextLevel" class="endbtn" aria-label="следващо ниво">▶</button>
+  </div>
+</section>
+
+<script>
+'use strict';
+/* ============================================================
+   DATA — вградени данни от words.json
+   ============================================================ */
+const LEVELS = [
+  {level:1, obscure:"blur-light", extraLetters:0, words:[
+    {word:"ЛЪВ",emoji:"🦁"},{word:"КОН",emoji:"🐴"},{word:"НОС",emoji:"👃"},
+    {word:"ЛУК",emoji:"🧅"},{word:"СОК",emoji:"🧃"},{word:"МЕД",emoji:"🍯"}]},
+  {level:2, obscure:"blur-strong", extraLetters:1, words:[
+    {word:"КИТ",emoji:"🐋"},{word:"РАК",emoji:"🦀"},{word:"ЛЕД",emoji:"🧊"},
+    {word:"ЧАЙ",emoji:"🍵"},{word:"ЗЪБ",emoji:"🦷"},{word:"ШАЛ",emoji:"🧣"}]},
+  {level:3, obscure:"silhouette", extraLetters:1, words:[
+    {word:"РИБА",emoji:"🐟"},{word:"МЕЧЕ",emoji:"🧸"},{word:"ЖАБА",emoji:"🐸"},
+    {word:"КОЛА",emoji:"🚗"},{word:"ЛУНА",emoji:"🌙"},{word:"ЗАЕК",emoji:"🐰"}]},
+  {level:4, obscure:"blur-strong", extraLetters:2, words:[
+    {word:"КУЧЕ",emoji:"🐶"},{word:"РОЗА",emoji:"🌹"},{word:"ГЪБА",emoji:"🍄"},
+    {word:"ВЛАК",emoji:"🚂"},{word:"ХЛЯБ",emoji:"🍞"},{word:"КЛЮЧ",emoji:"🔑"}]},
+  {level:5, obscure:"silhouette", extraLetters:2, words:[
+    {word:"ТОПКА",emoji:"⚽"},{word:"КРУША",emoji:"🍐"},{word:"БАНАН",emoji:"🍌"},
+    {word:"БАЛОН",emoji:"🎈"},{word:"КНИГА",emoji:"📖"},{word:"ЛОДКА",emoji:"⛵"}]},
+  {level:6, obscure:"peephole-big", extraLetters:2, words:[
+    {word:"ЛИМОН",emoji:"🍋"},{word:"ДОМАТ",emoji:"🍅"},{word:"ЧАДЪР",emoji:"☔"},
+    {word:"ПАНДА",emoji:"🐼"},{word:"ПЕТЕЛ",emoji:"🐓"},{word:"ТИГЪР",emoji:"🐯"}]},
+  {level:7, obscure:"peephole-small", extraLetters:3, words:[
+    {word:"ОБЛАК",emoji:"☁️"},{word:"ЖИРАФ",emoji:"🦒"},{word:"ЯБЪЛКА",emoji:"🍎"},
+    {word:"МОРКОВ",emoji:"🥕"},{word:"КАМИОН",emoji:"🚚"},{word:"ЗВЕЗДА",emoji:"⭐"}]},
+  {level:8, obscure:"tiles", extraLetters:3, words:[
+    {word:"ЧЕРЕША",emoji:"🍒"},{word:"ДЕЛФИН",emoji:"🐬"},{word:"КИТАРА",emoji:"🎸"},
+    {word:"РАКЕТА",emoji:"🚀"},{word:"КОЛЕЛО",emoji:"🚲"},{word:"КАРТОФ",emoji:"🥔"}]},
+  {level:9, obscure:"tiles", extraLetters:3, words:[
+    {word:"АНАНАС",emoji:"🍍"},{word:"КАМИЛА",emoji:"🐫"},{word:"ПИНГВИН",emoji:"🐧"},
+    {word:"ПАПАГАЛ",emoji:"🦜"},{word:"ТЕЛЕФОН",emoji:"📱"},{word:"САМОЛЕТ",emoji:"✈️"}]},
+  {level:10, obscure:"peephole-small", extraLetters:4, words:[
+    {word:"МАЙМУНА",emoji:"🐵"},{word:"КАЛИНКА",emoji:"🐞"},{word:"ОКТОПОД",emoji:"🐙"},
+    {word:"ЛИНЕЙКА",emoji:"🚑"},{word:"ПОЖАРНА",emoji:"🚒"},{word:"ПАЛАТКА",emoji:"⛺"}]},
+  {level:11, obscure:"mix", extraLetters:4, words:[
+    {word:"БАРАБАН",emoji:"🥁"},{word:"КОКОШКА",emoji:"🐔"},{word:"АВТОБУС",emoji:"🚌"},
+    {word:"СЛАДОЛЕД",emoji:"🍦"},{word:"ПЕПЕРУДА",emoji:"🦋"},{word:"СВЕТОФАР",emoji:"🚦"}]},
+  {level:12, obscure:"mix", extraLetters:4, words:[
+    {word:"ТРАКТОР",emoji:"🚜"},{word:"ФЛАМИНГО",emoji:"🦩"},{word:"КОМПЮТЪР",emoji:"💻"},
+    {word:"СНЕЖИНКА",emoji:"❄️"},{word:"ПОРТОКАЛ",emoji:"🍊"},{word:"КАТЕРИЦА",emoji:"🐿️"}]}
+];
+const ALPHABET=[..."АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЮЯ"]; // без Ь
+const MIX_MODES=["blur-strong","silhouette","peephole-small","tiles"];
+const PALETTE_N=6;
+const STORE_KEY="sglobi-dumata-v1";
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const S={
+  screen:"home",            // 'home'|'map'|'play'|'win'|'levelend'
+  level:null, wordIndex:null, word:null, emoji:null, mode:null,
+  placed:"", tray:[], hintsUsed:0, reveal:0, errStreak:0,
+  tileOrder:[], wordStars:[], lastLevelStars:0,
+  soundOn:true,
+  progress:{unlocked:1, stars:Array(12).fill(0)}
+};
+
+function loadProgress(){
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(!raw) return;
+    const p=JSON.parse(raw);
+    if(p && Number.isInteger(p.unlocked) && p.unlocked>=1 && p.unlocked<=12) S.progress.unlocked=p.unlocked;
+    if(p && Array.isArray(p.stars) && p.stars.length===12)
+      S.progress.stars=p.stars.map(v=>(Number.isInteger(v)&&v>=0&&v<=3)?v:0);
+    if(p && typeof p.soundOn==="boolean") S.soundOn=p.soundOn;
+  }catch(e){/* file:// или повреден запис — играем без запазване */}
+}
+function saveProgress(){
+  try{
+    localStorage.setItem(STORE_KEY,JSON.stringify({
+      unlocked:S.progress.unlocked, stars:S.progress.stars, soundOn:S.soundOn
+    }));
+  }catch(e){}
+}
+
+/* помощни */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function byId(id){return document.getElementById(id);}
+
+/* ============================================================
+   DOM-RENDER
+   ============================================================ */
+const elTray=byId("trayRow"), elSlots=byId("slotsRow"), elDots=byId("wordDots"),
+      elEmoji=byId("picEmoji"), elOverlay=byId("tilesOverlay"),
+      elEye=byId("btnEye"), elLetterBtn=byId("btnLetter"), elHintDots=byId("hintDots"),
+      elWinEmoji=byId("winEmoji"), elWinWord=byId("winWord"), elWinStars=byId("winStars"),
+      elEndTitle=byId("endTitle"), elEndStars=byId("endStars"),
+      scrWinEl=byId("scrWin"), scrEndEl=byId("scrEnd");
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  byId(id).classList.add("active");
+}
+function restartClass(el,c){el.classList.remove(c);void el.offsetWidth;el.classList.add(c);}
+
+function mascotDo(cls){
+  const scr={home:"scrHome",map:"scrMap",play:"scrPlay",win:"scrWin",levelend:"scrEnd"}[S.screen];
+  if(!scr) return;
+  const owl=byId(scr).querySelector(".owl");
+  if(!owl) return;
+  owl.classList.remove("m-hi","m-joy","m-sad");
+  void owl.offsetWidth;
+  owl.classList.add(cls);
+}
+/* глобално чистене на еднократните анимационни класове */
+document.addEventListener("animationend",e=>{
+  const map={popin:"popin",shake:"shake",nshake:"shake",bhint:"bhint",slotpop:"pop",mhi:"m-hi",mjoy:"m-joy",msad:"m-sad"};
+  const c=map[e.animationName];
+  if(c) e.target.classList.remove(c);
+});
+
+function renderHomeFloaties(){
+  const host=byId("floaties");
+  host.innerHTML="";
+  const spots=[[8,18],[85,12],[12,62],[90,55],[28,86],[72,84]];
+  for(let i=0;i<6;i++){
+    const f=document.createElement("div");
+    f.className="floaty c"+(i%PALETTE_N);
+    f.textContent=ALPHABET[Math.floor(Math.random()*ALPHABET.length)];
+    f.style.left=spots[i][0]+"%";
+    f.style.top=spots[i][1]+"%";
+    f.style.animationDelay=(i*0.9)+"s";
+    host.appendChild(f);
+  }
+}
+
+const MAP_POS=[[10,80],[24,68],[38,78],[52,66],[66,76],[80,64],[86,46],[72,36],[58,44],[44,34],[30,42],[16,30]];
+function renderMap(){
+  const host=byId("mapArea");
+  host.innerHTML="";
+  for(let i=0;i<MAP_POS.length-1;i++){
+    for(let k=1;k<=6;k++){
+      const t=k/7;
+      const d=document.createElement("i");
+      d.className="pathdot";
+      d.style.left=(MAP_POS[i][0]+(MAP_POS[i+1][0]-MAP_POS[i][0])*t)+"%";
+      d.style.top =(MAP_POS[i][1]+(MAP_POS[i+1][1]-MAP_POS[i][1])*t)+"%";
+      host.appendChild(d);
+    }
+  }
+  for(let n=1;n<=12;n++){
+    const node=document.createElement("div");
+    const locked=n>S.progress.unlocked;
+    const stars=S.progress.stars[n-1];
+    node.className="lnode "+(locked?"locked":("c"+((n-1)%PALETTE_N)));
+    if(!locked && stars===0) node.classList.add("cur");
+    node.style.left=MAP_POS[n-1][0]+"%";
+    node.style.top=MAP_POS[n-1][1]+"%";
+    const num=document.createElement("span");
+    num.className="num"; num.textContent=n;
+    node.appendChild(num);
+    if(locked){
+      const lk=document.createElement("span");
+      lk.className="lock"; lk.textContent="🔒";
+      node.appendChild(lk);
+    }else if(stars>0){
+      const m=document.createElement("div");
+      m.className="minis";
+      for(let s=0;s<3;s++){
+        const st=document.createElement("span");
+        st.className=s<stars?"mfull":"mempty";
+        st.textContent="★";
+        m.appendChild(st);
+      }
+      node.appendChild(m);
+    }
+    node.addEventListener("pointerdown",ev=>{
+      ev.preventDefault();
+      if(locked){restartClass(node,"shake");sndThud(0.10);}
+      else{sndTap();actOpenLevel(n);}
+    });
+    host.appendChild(node);
+  }
+}
+
+function renderWordDots(){
+  elDots.innerHTML="";
+  const total=LEVELS[S.level-1].words.length;
+  for(let i=0;i<total;i++){
+    const d=document.createElement("i");
+    d.className="wdot"+(i<S.wordIndex?" done":(i===S.wordIndex?" cur":""));
+    elDots.appendChild(d);
+  }
+}
+
+function renderHints(){
+  [...elHintDots.children].forEach((d,i)=>d.classList.toggle("used",i<S.hintsUsed));
+  const off=S.hintsUsed>=2;
+  elEye.classList.toggle("off",off);
+  elLetterBtn.classList.toggle("off",off);
+}
+
+function buildSlots(){
+  elSlots.innerHTML="";
+  for(let i=0;i<S.word.length;i++){
+    const s=document.createElement("div");
+    s.className="slot";
+    elSlots.appendChild(s);
+  }
+  updateNextSlot();
+}
+function updateNextSlot(){
+  [...elSlots.children].forEach((s,i)=>s.classList.toggle("next",i===S.placed.length));
+}
+function fillSlot(s,ch,ci,pop){
+  /* s е конкретният слот-елемент: закъснял колбек (flyGhost) не може да
+     запълни слот на ПО-НОВА дума — старите елементи са извън DOM */
+  if(!s||!s.isConnected||s.parentNode!==elSlots) return;
+  s.textContent=ch;
+  [...s.classList].forEach(c=>{if(/^c\d+$/.test(c))s.classList.remove(c);});
+  s.classList.add("filled","c"+ci);
+  if(pop) restartClass(s,"pop");
+}
+
+function findTrayTile(ch){
+  return elTray.querySelector('.tile:not(.taken)[data-l="'+ch+'"]');
+}
+
+function buildTray(){
+  elTray.innerHTML="";
+  S.tray.forEach((ch,i)=>{
+    const t=document.createElement("div");
+    t.className="tile popin c"+(i%PALETTE_N);
+    t.dataset.l=ch;
+    t.dataset.c=i%PALETTE_N;
+    t.textContent=ch;
+    t.style.animationDelay=(i*40)+"ms";
+    attachTilePointer(t);
+    elTray.appendChild(t);
+  });
+  balanceTray();
+}
+/* ако всички плочки не се събират на един ред, ограничаваме ширината на таблата,
+   за да се пренесат балансирано (6+6), а не със самотна плочка на втория ред */
+function balanceTray(){
+  elTray.style.maxWidth="";
+  const tiles=elTray.querySelectorAll(".tile:not(.taken)");
+  const n=tiles.length;
+  if(!n) return;
+  /* екранът може още да не е показан (renderPlay тече преди show) — изчакваме кадър */
+  const avail=(elTray.parentElement?elTray.parentElement.clientWidth:0)-32;
+  if(avail<=0){requestAnimationFrame(balanceTray);return;}
+  const gap=parseFloat(getComputedStyle(elTray).gap)||12;
+  /* computed width, не getBoundingClientRect — popin анимацията мащабира от scale(0) */
+  const tw=parseFloat(getComputedStyle(tiles[0]).width)||72;
+  if(n*tw+(n-1)*gap>avail){
+    const per=Math.ceil(n/2);
+    elTray.style.maxWidth=(per*tw+(per-1)*gap+2)+"px";
+  }
+}
+window.addEventListener("resize",balanceTray);
+function removeTileEl(el){
+  if(!el) return;
+  el.style.transform="";
+  el.classList.add("taken");
+  setTimeout(()=>{if(el.isConnected)el.remove();},230);
+}
+
+/* картинката + режим на скриване */
+function buildPicture(){
+  elEmoji.textContent=S.emoji;
+  elEmoji.style.filter="";
+  elEmoji.style.clipPath="";
+  elOverlay.classList.toggle("on",S.mode==="tiles");
+  elOverlay.innerHTML="";
+  if(S.mode==="tiles"){
+    for(let i=0;i<9;i++){
+      const c=document.createElement("div");
+      c.className="cover c"+(i%PALETTE_N);
+      elOverlay.appendChild(c);
+    }
+  }
+  /* начално състояние — без преход */
+  elEmoji.classList.add("notrans");
+  applyReveal();
+  void elEmoji.offsetWidth;
+  elEmoji.classList.remove("notrans");
+}
+function applyReveal(){
+  const r=Math.max(0,Math.min(1,S.reveal));
+  switch(S.mode){
+    case "blur-light":
+      elEmoji.style.filter="blur("+(12*(1-r)).toFixed(2)+"px)";break;
+    case "blur-strong":
+      elEmoji.style.filter="blur("+(28*(1-r)).toFixed(2)+"px)";break;
+    case "silhouette":{
+      const b=Math.max(0,Math.min(1,(r-0.1)/0.9));
+      elEmoji.style.filter="brightness("+b.toFixed(3)+") drop-shadow(0 0 8px rgba(255,255,255,.85))";break;}
+    case "peephole-big":
+      elEmoji.style.clipPath="circle("+(18+57*r).toFixed(1)+"% at 50% 50%)";break;
+    case "peephole-small":
+      elEmoji.style.clipPath="circle("+(8+67*r).toFixed(1)+"% at 50% 50%)";break;
+    case "tiles":{
+      /* reveal 0.1→0.8 се изобразява линейно върху 0→8 паднали плочки, така че
+         всяка вярна буква маха поне една (и при 8-буквена дума — точно една);
+         9-ата плочка пада чак при reveal===1 — картинката не се издава предсрочно */
+      const gone=r>=1?9:Math.max(0,Math.min(8,Math.floor((r-0.1)/0.7*8+1e-6)));
+      let k=0;
+      for(let i=0;i<gone&&i<9;i++){
+        const c=elOverlay.children[S.tileOrder[i]];
+        if(c&&!c.classList.contains("gone")){
+          c.style.transitionDelay=(k*60)+"ms";
+          c.classList.add("gone");
+          k++;
+        }
+      }
+      break;}
+  }
+}
+
+function renderPlay(){
+  renderWordDots();
+  renderHints();
+  buildSlots();
+  buildTray();
+  buildPicture();
+  updateSoundBtns();
+  mascotDo("m-hi");
+}
+
+let winTimers=[];
+function clearWinTimers(){winTimers.forEach(t=>clearTimeout(t));winTimers=[];}
+
+function renderWin(){
+  clearWinTimers();
+  elWinEmoji.textContent=S.emoji;
+  elWinWord.innerHTML="";
+  [...S.word].forEach((ch,i)=>{
+    const t=document.createElement("div");
+    t.className="tile wtile c"+(i%PALETTE_N);
+    t.textContent=ch;
+    t.style.animationDelay=(i*90)+"ms";
+    elWinWord.appendChild(t);
+  });
+  elWinStars.innerHTML="";
+  const n=Math.max(1,3-S.hintsUsed);
+  for(let i=0;i<n;i++){
+    const s=document.createElement("span");
+    s.className="star big";
+    s.textContent="★";
+    elWinStars.appendChild(s);
+    winTimers.push(setTimeout(()=>{
+      if(s.isConnected&&scrWinEl.classList.contains("active")){
+        s.classList.add("shown");sndDing();
+      }
+    },450+i*250));
+  }
+  show("scrWin");
+  sndWordFanfare();
+  confetti(2500,120);
+}
+
+function renderLevelEnd(){
+  clearWinTimers();
+  elEndTitle.textContent="НИВО "+S.level;
+  elEndStars.innerHTML="";
+  for(let i=0;i<3;i++){
+    const s=document.createElement("span");
+    s.className="star huge"+(i<S.lastLevelStars?"":" empty");
+    s.textContent="★";
+    elEndStars.appendChild(s);
+    const earned=i<S.lastLevelStars;
+    winTimers.push(setTimeout(()=>{
+      if(s.isConnected&&scrEndEl.classList.contains("active")){
+        s.classList.add("shown");
+        if(earned)sndDing();
+      }
+    },500+i*350));
+  }
+  byId("btnNextLevel").style.display=(S.level>=12)?"none":"flex";
+  show("scrEnd");
+  sndLevelFanfare();
+  confetti(3500,180);
+}
+
+function updateSoundBtns(){
+  document.querySelectorAll(".sndbtn").forEach(b=>b.textContent=S.soundOn?"🔊":"🔇");
+}
+
+/* ============================================================
+   GAME-LOGIC (единственият източник на истина — ползва се
+   и от UI, и от тестовия API)
+   ============================================================ */
+function clearWordState(){
+  S.wordIndex=null;S.word=null;S.emoji=null;S.mode=null;
+  S.placed="";S.tray=[];S.hintsUsed=0;S.errStreak=0;S.tileOrder=[];
+  stopBounce();
+}
+
+function actStart(){            /* -> map */
+  stopBounce();clearWinTimers();
+  S.screen="map";S.level=null;clearWordState();S.reveal=0;
+  renderMap();updateSoundBtns();show("scrMap");
+}
+function actHome(){
+  stopBounce();clearWinTimers();
+  S.screen="home";S.level=null;clearWordState();S.reveal=0;
+  updateSoundBtns();show("scrHome");mascotDo("m-hi");
+}
+function actOpenLevel(n){
+  if(!Number.isInteger(n)||n<1||n>12||n>S.progress.unlocked) return false;
+  stopBounce();clearWinTimers();
+  S.level=n;S.wordIndex=0;S.wordStars=[];
+  startWord();
+  return true;
+}
+function startWord(){
+  stopBounce();
+  const L=LEVELS[S.level-1], W=L.words[S.wordIndex];
+  S.word=W.word;S.emoji=W.emoji;
+  S.mode=(L.obscure==="mix")?MIX_MODES[Math.floor(Math.random()*MIX_MODES.length)]:L.obscure;
+  S.placed="";S.hintsUsed=0;S.errStreak=0;S.reveal=0.1;
+  S.tileOrder=shuffle([0,1,2,3,4,5,6,7,8]);
+  S.tray=makeTray(W.word,L.extraLetters);
+  S.screen="play";
+  renderPlay();show("scrPlay");
+}
+function makeTray(word,extra){
+  const letters=[...word];
+  /* излишните букви — само такива, които ги НЯМА в думата */
+  const pool=shuffle(ALPHABET.filter(c=>!letters.includes(c)));
+  const tray=letters.concat(pool.slice(0,extra));
+  let guard=0;
+  do{shuffle(tray);}
+  while(tray.length>1&&tray.slice(0,word.length).join("")===word&&++guard<60);
+  return tray;
+}
+
+/* докосване на буква — ядро (UI и API) */
+function tryLetter(ch,tileEl){
+  if(S.screen!=="play") return false;
+  ch=String(ch==null?"":ch).toUpperCase();
+  const ti=S.tray.indexOf(ch);
+  if(ti<0) return false;
+  const el=tileEl||findTrayTile(ch);
+  if(ch===S.word[S.placed.length]){
+    /* вярна буква — state синхронно */
+    S.tray.splice(ti,1);
+    S.placed+=ch;
+    S.errStreak=0;
+    stopBounce();
+    const done=S.placed===S.word;
+    S.reveal=done?1:Math.min(0.95,S.reveal+0.7/S.word.length);
+    if(done) finishWord();          /* screen='win' синхронно */
+    fxCorrect(el,done);             /* козметика */
+    return true;
+  }
+  /* грешна буква — мека реакция, нищо не се губи */
+  S.errStreak++;
+  fxWrong(el);
+  return false;
+}
+
+function finishWord(){
+  S.screen="win";
+  S.wordStars[S.wordIndex]=Math.max(1,3-S.hintsUsed);
+  const total=LEVELS[S.level-1].words.length;
+  if(S.wordIndex===total-1){
+    /* прогресът се записва в момента на завършване на последната дума */
+    const avg=S.wordStars.reduce((a,b)=>a+b,0)/total;
+    S.lastLevelStars=Math.max(1,Math.round(avg));
+    S.progress.stars[S.level-1]=Math.max(S.progress.stars[S.level-1],S.lastLevelStars);
+    S.progress.unlocked=Math.max(S.progress.unlocked,Math.min(S.level+1,12));
+    saveProgress();
+  }
+}
+
+function actHintEye(){
+  if(S.screen!=="play"||S.hintsUsed>=2) return;
+  S.hintsUsed++;S.errStreak=0;stopBounce();
+  S.reveal=Math.min(0.95,S.reveal+0.38);
+  applyReveal();renderHints();sndTap();mascotDo("m-joy");
+}
+function actHintLetter(){
+  if(S.screen!=="play"||S.hintsUsed>=2) return;
+  S.hintsUsed++;renderHints();
+  tryLetter(S.word[S.placed.length],null); /* може да завърши думата */
+}
+
+function actNext(){
+  if(S.screen==="win"){
+    const total=LEVELS[S.level-1].words.length;
+    if(S.wordIndex<total-1){S.wordIndex++;startWord();}
+    else{
+      S.screen="levelend";
+      clearWordState();
+      S.reveal=1;
+      renderLevelEnd();
+    }
+  }else if(S.screen==="levelend"){
+    actStart();
+  }
+}
+
+function actReset(){
+  try{localStorage.removeItem(STORE_KEY);}catch(e){}
+  S.progress={unlocked:1,stars:Array(12).fill(0)};
+  S.soundOn=true;
+  if(master)master.gain.value=1;
+  updateSoundBtns();
+  actHome();
+}
+
+function toggleSound(){
+  S.soundOn=!S.soundOn;
+  if(master)master.gain.value=S.soundOn?1:0;
+  saveProgress();
+  updateSoundBtns();
+  sndTap();
+}
+
+/* подсещане след 3 поредни грешки */
+let bounceTimer=null;
+function startBounce(){
+  if(bounceTimer) return;
+  doBounceHint();
+  bounceTimer=setInterval(doBounceHint,3500);
+}
+function stopBounce(){
+  if(bounceTimer){clearInterval(bounceTimer);bounceTimer=null;}
+}
+function doBounceHint(){
+  if(S.screen!=="play"||S.errStreak<3){stopBounce();return;}
+  const t=findTrayTile(S.word[S.placed.length]);
+  if(t) restartClass(t,"bhint");
+}
+
+/* ============================================================
+   FX — козметика (полети, поклащания, конфети)
+   ============================================================ */
+function fxCorrect(el,done){
+  sndCorrect();
+  mascotDo("m-joy");
+  const i=S.placed.length-1;
+  const ch=S.placed[i];
+  const ci=el?+el.dataset.c:(i%PALETTE_N);
+  const slot=elSlots.children[i];
+  if(done){
+    removeTileEl(el);
+    fillSlot(slot,ch,ci,true);
+    updateNextSlot();
+    applyReveal();
+    mascotDo("m-joy");
+    renderWin();           /* екранът-празник веднага (state вече е 'win') */
+    return;
+  }
+  if(el&&slot){
+    flyGhost(el,slot,ci,ch,()=>fillSlot(slot,ch,ci,true));
+    removeTileEl(el);
+  }else{
+    removeTileEl(el);
+    fillSlot(slot,ch,ci,true);
+  }
+  updateNextSlot();
+  applyReveal();
+}
+function fxWrong(el){
+  sndThud(0.15);
+  mascotDo("m-sad");
+  if(el)restartClass(el,"shake");
+  if(S.errStreak>=3)startBounce();
+}
+function flyGhost(el,slot,ci,ch,onEnd){
+  const r1=el.getBoundingClientRect(),r2=slot.getBoundingClientRect();
+  if(!r1.width||!r2.width){onEnd&&onEnd();return;}
+  const g=document.createElement("div");
+  g.className="tile ghost c"+ci;
+  g.textContent=ch;
+  g.style.left=r1.left+"px";g.style.top=r1.top+"px";
+  g.style.width=r1.width+"px";g.style.height=r1.height+"px";
+  document.body.appendChild(g);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const dx=(r2.left+r2.width/2)-(r1.left+r1.width/2);
+    const dy=(r2.top+r2.height/2)-(r1.top+r1.height/2);
+    g.style.transform="translate("+dx+"px,"+dy+"px) scale("+(r2.width/r1.width).toFixed(3)+")";
+  }));
+  setTimeout(()=>{g.remove();onEnd&&onEnd();},390);
+}
+
+/* конфети — fullscreen canvas, чисти се след края */
+let confettiCanvas=null,confettiRaf=0;
+function killConfetti(){
+  if(confettiRaf)cancelAnimationFrame(confettiRaf);
+  confettiRaf=0;
+  if(confettiCanvas){confettiCanvas.remove();confettiCanvas=null;}
+}
+function confetti(duration,count){
+  killConfetti();
+  const cv=document.createElement("canvas");
+  cv.style.cssText="position:fixed;inset:0;pointer-events:none;z-index:100;";
+  cv.width=innerWidth;cv.height=innerHeight;
+  document.body.appendChild(cv);
+  confettiCanvas=cv;
+  const ctx=cv.getContext("2d");
+  const colors=["#FF6B6B","#FFA94D","#FFD43B","#69DB7C","#4DABF7","#B197FC"];
+  const parts=[];
+  for(let i=0;i<count;i++){
+    parts.push({
+      x:Math.random()*cv.width, y:-20-Math.random()*cv.height*0.3,
+      vx:(Math.random()-0.5)*2.4, vy:2+Math.random()*3,
+      rot:Math.random()*360, vr:4+Math.random()*6,
+      w:8+Math.random()*6, h:8+Math.random()*6,
+      ph:Math.random()*6.28, col:colors[i%6]
+    });
+  }
+  const t0=performance.now();
+  function frame(t){
+    const el=t-t0;
+    if(el>=duration||!confettiCanvas){killConfetti();return;}
+    const fade=el>duration-400?(duration-el)/400:1;
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.globalAlpha=Math.max(0,fade);
+    for(const p of parts){
+      p.vy+=0.12;
+      p.x+=p.vx+Math.sin(p.ph+el/300)*0.8;
+      p.y+=p.vy;
+      p.rot+=p.vr;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.col;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    }
+    confettiRaf=requestAnimationFrame(frame);
+  }
+  confettiRaf=requestAnimationFrame(frame);
+}
+
+/* ============================================================
+   AUDIO — WebAudio, всичко синтезирано
+   ============================================================ */
+let actx=null,master=null;
+function initAudio(){
+  if(!actx){
+    try{
+      actx=new (window.AudioContext||window.webkitAudioContext)();
+      master=actx.createGain();
+      master.gain.value=S.soundOn?1:0;
+      master.connect(actx.destination);
+    }catch(e){actx=null;}
+  }
+  if(actx&&actx.state==="suspended")actx.resume().catch(()=>{});
+}
+document.addEventListener("pointerdown",initAudio,true);
+
+function tone(opt){
+  if(!actx||!master)return;
+  const now=actx.currentTime+(opt.at||0);
+  const dur=opt.dur||0.2;
+  const o=actx.createOscillator();
+  o.type=opt.type||"sine";
+  o.frequency.setValueAtTime(opt.f,now);
+  if(opt.f2)o.frequency.linearRampToValueAtTime(opt.f2,now+dur);
+  const g=actx.createGain();
+  g.gain.setValueAtTime(0.0001,now);
+  g.gain.linearRampToValueAtTime(opt.g||0.2,now+0.005);
+  g.gain.exponentialRampToValueAtTime(0.0001,now+dur);
+  let dest=master;
+  if(opt.lp){
+    const fl=actx.createBiquadFilter();
+    fl.type="lowpass";fl.frequency.value=opt.lp;
+    fl.connect(master);dest=fl;
+  }
+  o.connect(g);g.connect(dest);
+  o.start(now);o.stop(now+dur+0.05);
+}
+function sndTap(){tone({f:440,dur:0.05,type:"sine",g:0.12});}
+function sndCorrect(){
+  tone({f:660,dur:0.08,type:"sine",g:0.25});
+  tone({f:880,dur:0.10,type:"sine",g:0.25,at:0.11});
+}
+function sndThud(g){tone({f:220,f2:160,dur:0.2,type:"triangle",g:g||0.15});}
+function sndDing(){tone({f:1319,dur:0.3,type:"sine",g:0.2});}
+function sndWordFanfare(){
+  const notes=[523,659,784,1047];
+  notes.forEach((f,i)=>tone({f,dur:0.12,type:"square",g:0.22,lp:2000,at:i*0.12}));
+  tone({f:1047,dur:0.4,type:"square",g:0.22,lp:2000,at:0.48});
+  tone({f:1319,dur:0.4,type:"square",g:0.22,lp:2000,at:0.48});
+}
+function sndLevelFanfare(){
+  const notes=[392,523,659,784];
+  notes.forEach((f,i)=>tone({f,dur:0.14,type:"triangle",g:0.22,at:i*0.14}));
+  tone({f:1047,dur:0.5,type:"triangle",g:0.22,at:4*0.14});
+}
+
+/* ============================================================
+   UI ВРЪЗКИ (същата логика като тестовия API)
+   ============================================================ */
+byId("btnPlay").addEventListener("pointerdown",e=>{e.preventDefault();sndTap();actStart();});
+byId("btnHome").addEventListener("pointerdown",e=>{e.preventDefault();sndTap();actHome();});
+byId("btnBack").addEventListener("pointerdown",e=>{e.preventDefault();sndTap();actStart();});
+byId("btnEye").addEventListener("pointerdown",e=>{e.preventDefault();actHintEye();});
+byId("btnLetter").addEventListener("pointerdown",e=>{e.preventDefault();actHintLetter();});
+byId("btnNext").addEventListener("pointerdown",e=>{e.preventDefault();sndTap();actNext();});
+byId("btnEndMap").addEventListener("pointerdown",e=>{e.preventDefault();sndTap();actNext();});
+byId("btnAgain").addEventListener("pointerdown",e=>{e.preventDefault();sndTap();actOpenLevel(S.level);});
+byId("btnNextLevel").addEventListener("pointerdown",e=>{e.preventDefault();sndTap();if(S.level<12)actOpenLevel(S.level+1);});
+document.querySelectorAll(".sndbtn").forEach(b=>b.addEventListener("pointerdown",e=>{e.preventDefault();toggleSound();}));
+
+/* „изтрий прогреса" — родителски жест: задържане 5s, после потвърждение
+   с второ задържане 2s върху появилото се ✔ (иначе се отказва след 4s) */
+(function(){
+  const b=byId("btnReset");
+  let t=null,armTimer=null,armed=false;
+  const disarm=()=>{armed=false;if(armTimer){clearTimeout(armTimer);armTimer=null;}b.textContent="♻";b.classList.remove("armed");};
+  const cancel=()=>{if(t){clearTimeout(t);t=null;}b.classList.remove("holding");};
+  b.addEventListener("pointerdown",e=>{
+    e.preventDefault();
+    b.classList.add("holding");
+    if(!armed){
+      t=setTimeout(()=>{
+        cancel();
+        armed=true;b.textContent="✔";b.classList.add("armed");
+        armTimer=setTimeout(disarm,4000);
+      },5000);
+    }else{
+      t=setTimeout(()=>{cancel();disarm();sndTap();actReset();},2000);
+    }
+  });
+  b.addEventListener("pointerup",cancel);
+  b.addEventListener("pointerleave",cancel);
+  b.addEventListener("pointercancel",cancel);
+})();
+
+/* плочки: докосване + влачене (pointer events) */
+function attachTilePointer(t){
+  let pid=null,sx=0,sy=0,dragging=false;
+  t.addEventListener("pointerdown",e=>{
+    if(t.classList.contains("taken"))return;
+    e.preventDefault();
+    pid=e.pointerId;sx=e.clientX;sy=e.clientY;dragging=false;
+    try{t.setPointerCapture(pid);}catch(err){}
+    t.classList.add("pressed");
+  });
+  t.addEventListener("pointermove",e=>{
+    if(pid===null||e.pointerId!==pid||t.classList.contains("taken"))return;
+    const dx=e.clientX-sx,dy=e.clientY-sy;
+    if(!dragging&&Math.hypot(dx,dy)>12){dragging=true;t.classList.add("dragging");t.classList.remove("pressed","popin");}
+    if(dragging)t.style.transform="translate("+dx+"px,"+dy+"px) scale(1.08)";
+  });
+  t.addEventListener("pointerup",e=>{
+    if(pid===null||e.pointerId!==pid)return;
+    pid=null;
+    t.classList.remove("pressed");
+    if(t.classList.contains("taken"))return;
+    if(dragging){
+      t.classList.remove("dragging");
+      const r=elSlots.getBoundingClientRect();
+      const over=e.clientY>r.top-30&&e.clientY<r.bottom+30&&e.clientX>r.left-40&&e.clientX<r.right+40;
+      let ok=false;
+      if(over)ok=tryLetter(t.dataset.l,t);
+      if(!ok&&!t.classList.contains("taken")){
+        t.style.transition="transform .3s ease";
+        t.style.transform="";
+        setTimeout(()=>{if(t.isConnected)t.style.transition="";},320);
+      }
+    }else{
+      tryLetter(t.dataset.l,t);
+    }
+  });
+  t.addEventListener("pointercancel",e=>{
+    if(e.pointerId!==pid)return;
+    pid=null;
+    t.classList.remove("pressed","dragging");
+    t.style.transform="";
+  });
+}
+
+/* без скрол/жестове по време на игра */
+document.addEventListener("touchmove",e=>e.preventDefault(),{passive:false});
+document.addEventListener("dblclick",e=>e.preventDefault());
+
+/* ============================================================
+   TEST-API — window.__test (точно по контракта; синхронни преходи)
+   ============================================================ */
+window.__test={
+  state(){
+    const inWord=(S.screen==="play"||S.screen==="win");
+    return {
+      screen:S.screen==="levelend"?"win":S.screen,
+      level:(inWord||S.screen==="levelend")?S.level:null,
+      wordIndex:inWord?S.wordIndex:null,
+      word:inWord?S.word:null,
+      placed:inWord?S.placed:"",
+      tray:inWord?S.tray.slice():[],
+      hintsUsed:inWord?S.hintsUsed:0,
+      progress:{unlocked:S.progress.unlocked,stars:S.progress.stars.slice()},
+      soundOn:S.soundOn,
+      reveal:S.screen==="levelend"?1:(inWord?S.reveal:0)
+    };
+  },
+  start(){actStart();},
+  openLevel(n){return actOpenLevel(n);},
+  tapLetter(ch){return tryLetter(ch,null);},
+  hintEye(){actHintEye();},
+  hintLetter(){actHintLetter();},
+  next(){actNext();},
+  reset(){actReset();}
+};
+
+/* ============================================================
+   СТАРТ
+   ============================================================ */
+loadProgress();
+renderHomeFloaties();
+updateSoundBtns();
+show("scrHome");
+mascotDo("m-hi");
+</script>
+</body>
+</html>
