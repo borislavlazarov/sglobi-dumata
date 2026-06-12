@@ -8,14 +8,14 @@
         { "word": "ЛЪВ", "emoji": "🦁" },
         { "word": "КОН", "emoji": "🐴" },
         { "word": "НОС", "emoji": "👃" },
-        { "word": "ОКО", "emoji": "👁️" },
+        { "word": "ДОМ", "emoji": "🏠" },
         { "word": "СОК", "emoji": "🧃" },
         { "word": "МЕД", "emoji": "🍯" }
       ]
     },
     {
       "level": 2,
-      "obscure": "blur-strong",
+      "obscure": "blur-light",
       "extraLetters": 1,
       "words": [
         { "word": "КИТ", "emoji": "🐋" },
@@ -28,7 +28,7 @@
     },
     {
       "level": 3,
-      "obscure": "silhouette",
+      "obscure": "blur-light",
       "extraLetters": 1,
       "words": [
         { "word": "РИБА", "emoji": "🐟" },
@@ -41,8 +41,8 @@
     },
     {
       "level": 4,
-      "obscure": "blur-strong",
-      "extraLetters": 2,
+      "obscure": "peephole-big",
+      "extraLetters": 1,
       "words": [
         { "word": "КУЧЕ", "emoji": "🐶" },
         { "word": "РОЗА", "emoji": "🌹" },
@@ -55,7 +55,7 @@
     {
       "level": 5,
       "obscure": "silhouette",
-      "extraLetters": 2,
+      "extraLetters": 1,
       "words": [
         { "word": "ТОПКА", "emoji": "⚽" },
         { "word": "КРУША", "emoji": "🍐" },
@@ -80,8 +80,8 @@
     },
     {
       "level": 7,
-      "obscure": "peephole-small",
-      "extraLetters": 3,
+      "obscure": "silhouette",
+      "extraLetters": 2,
       "words": [
         { "word": "ОБЛАК", "emoji": "☁️" },
         { "word": "ЖИРАФ", "emoji": "🦒" },
@@ -94,7 +94,7 @@
     {
       "level": 8,
       "obscure": "tiles",
-      "extraLetters": 3,
+      "extraLetters": 2,
       "words": [
         { "word": "ЧЕРЕША", "emoji": "🍒" },
         { "word": "ДЕЛФИН", "emoji": "🐬" },
@@ -107,7 +107,7 @@
     {
       "level": 9,
       "obscure": "tiles",
-      "extraLetters": 3,
+      "extraLetters": 2,
       "words": [
         { "word": "АНАНАС", "emoji": "🍍" },
         { "word": "КАМИЛА", "emoji": "🐫" },
@@ -120,7 +120,7 @@
     {
       "level": 10,
       "obscure": "peephole-small",
-      "extraLetters": 4,
+      "extraLetters": 3,
       "words": [
         { "word": "МАЙМУНА", "emoji": "🐵" },
         { "word": "КАЛИНКА", "emoji": "🐞" },
@@ -133,7 +133,7 @@
     {
       "level": 11,
       "obscure": "mix",
-      "extraLetters": 4,
+      "extraLetters": 3,
       "words": [
         { "word": "БАРАБАН", "emoji": "🥁" },
         { "word": "КОКОШКА", "emoji": "🐔" },
