@@ -222,6 +222,16 @@ button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;t
 @keyframes popin{0%{transform:scale(0);}70%{transform:scale(1.08);}100%{transform:scale(1);}}
 /* плочки/слотове със срички (2 букви) — по-малък шрифт, за да се събере сричката */
 .tile.u2,.slot.u2{font-size:clamp(26px,3.4vw,34px);letter-spacing:1px;}
+/* родителски режим — индикатор + бутон „пропусни думата" (скрити, докато не е включен) */
+#parentBadge{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:120;
+  display:none;padding:5px 14px;border-radius:999px;font-size:14px;font-weight:bold;
+  color:#fff;background:rgba(60,40,20,.62);letter-spacing:.5px;pointer-events:none;}
+#parentBadge.on{display:block;}
+#btnParentSkip{position:fixed;right:16px;bottom:16px;z-index:120;display:none;
+  width:62px;height:62px;border-radius:50%;border:none;cursor:pointer;color:#fff;font-size:30px;
+  background:#845EF7;box-shadow:0 6px 0 #6741D9,0 8px 16px rgba(0,0,0,.2);touch-action:none;}
+#btnParentSkip.on{display:flex;align-items:center;justify-content:center;}
+#btnParentSkip:active{transform:scale(.92);}
 .tile.taken{width:0!important;min-width:0!important;margin:0!important;padding:0!important;opacity:0;visibility:hidden;pointer-events:none;}
 .tile.bhint{animation:bhint .6s ease;}
 @keyframes bhint{0%{transform:translateY(0);}25%{transform:translateY(-10px);}50%{transform:translateY(0);}75%{transform:translateY(-6px);}100%{transform:translateY(0);}}
@@ -337,6 +347,10 @@ button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;t
   </div>
 </section>
 
+<!-- ===================== РОДИТЕЛСКИ РЕЖИМ (за тестване) ===================== -->
+<div id="parentBadge">🔧 родителски режим</div>
+<button id="btnParentSkip" aria-label="пропусни думата">⏭</button>
+
 <script>
 'use strict';
 /* ============================================================
@@ -418,6 +432,7 @@ const S={
   placed:"", tray:[], hintsUsed:0, reveal:0, errStreak:0,
   tileOrder:[], wordStars:[], lastLevelStars:0,
   soundOn:true,
+  parent:false,               // родителски режим за тестване — отключва всички нива + бутон „пропусни" (само за сесията, НЕ се запазва)
   progress:{unlocked:1, stars:Array(NLEV).fill(0)}
 };
 
@@ -459,6 +474,30 @@ const elTray=byId("trayRow"), elSlots=byId("slotsRow"), elDots=byId("wordDots"),
 function show(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   byId(id).classList.add("active");
+  updateParentUI();
+}
+/* родителски режим: индикатор винаги когато е включен; бутон „пропусни" само в игра */
+function updateParentUI(){
+  byId("parentBadge").classList.toggle("on",S.parent);
+  byId("btnParentSkip").classList.toggle("on",S.parent&&S.screen==="play");
+}
+function toggleParent(){
+  S.parent=!S.parent;
+  sndTap();
+  updateParentUI();
+  if(S.screen==="map") renderMap();   // прерисуваме, за да се отключат/заключат възлите
+}
+/* мигновено решаване на текущата дума (само в родителски режим) — спестява ръчното подреждане */
+function actParentSkip(){
+  if(!S.parent||S.screen!=="play") return false;
+  stopBounce();
+  S.step=S.units.length;
+  S.placed=S.word;
+  S.reveal=1;
+  S.errStreak=0;
+  finishWord();      // screen='win', звезди, запис при последна дума
+  renderWin();
+  return true;
 }
 function restartClass(el,c){el.classList.remove(c);void el.offsetWidth;el.classList.add(c);}
 
@@ -510,7 +549,7 @@ function renderMap(){
   }
   for(let n=1;n<=NLEV;n++){
     const node=document.createElement("div");
-    const locked=n>S.progress.unlocked;
+    const locked=n>S.progress.unlocked&&!S.parent;
     const stars=S.progress.stars[n-1];
     node.className="lnode "+(locked?"locked":("c"+((n-1)%PALETTE_N)));
     if(!locked && stars===0) node.classList.add("cur");
@@ -772,7 +811,7 @@ function actHome(){
   updateSoundBtns();show("scrHome");mascotDo("m-hi");
 }
 function actOpenLevel(n){
-  if(!Number.isInteger(n)||n<1||n>NLEV||n>S.progress.unlocked) return false;
+  if(!Number.isInteger(n)||n<1||n>NLEV||(n>S.progress.unlocked&&!S.parent)) return false;
   stopBounce();clearWinTimers();
   S.level=n;S.wordIndex=0;S.wordStars=[];
   startWord();
@@ -877,6 +916,7 @@ function actReset(){
   try{localStorage.removeItem(STORE_KEY);}catch(e){}
   S.progress={unlocked:1,stars:Array(NLEV).fill(0)};
   S.soundOn=true;
+  S.parent=false;
   if(master)master.gain.value=1;
   updateSoundBtns();
   actHome();
@@ -1076,7 +1116,7 @@ byId("btnLetter").addEventListener("pointerdown",e=>{e.preventDefault();actHintL
 byId("btnNext").addEventListener("pointerdown",e=>{e.preventDefault();sndTap();actNext();});
 byId("btnEndMap").addEventListener("pointerdown",e=>{e.preventDefault();sndTap();actNext();});
 byId("btnAgain").addEventListener("pointerdown",e=>{e.preventDefault();sndTap();actOpenLevel(S.level);});
-byId("btnNextLevel").addEventListener("pointerdown",e=>{e.preventDefault();sndTap();if(S.level<12)actOpenLevel(S.level+1);});
+byId("btnNextLevel").addEventListener("pointerdown",e=>{e.preventDefault();sndTap();if(S.level<NLEV)actOpenLevel(S.level+1);});
 document.querySelectorAll(".sndbtn").forEach(b=>b.addEventListener("pointerdown",e=>{e.preventDefault();toggleSound();}));
 
 /* „изтрий прогреса" — родителски жест: задържане 5s, после потвърждение
@@ -1103,6 +1143,19 @@ document.querySelectorAll(".sndbtn").forEach(b=>b.addEventListener("pointerdown"
   b.addEventListener("pointerleave",cancel);
   b.addEventListener("pointercancel",cancel);
 })();
+
+/* родителски режим: задържане 1.5s върху бухала на картата го включва/изключва */
+(function(){
+  const m=document.querySelector("#scrMap .mascot");
+  if(!m) return;
+  let t=null;
+  const cancel=()=>{if(t){clearTimeout(t);t=null;}};
+  m.addEventListener("pointerdown",e=>{e.preventDefault();cancel();t=setTimeout(()=>{cancel();toggleParent();},1500);});
+  m.addEventListener("pointerup",cancel);
+  m.addEventListener("pointerleave",cancel);
+  m.addEventListener("pointercancel",cancel);
+})();
+byId("btnParentSkip").addEventListener("pointerdown",e=>{e.preventDefault();actParentSkip();});
 
 /* плочки: докосване + влачене (pointer events) */
 function attachTilePointer(t){
@@ -1170,6 +1223,7 @@ window.__test={
       hintsUsed:inWord?S.hintsUsed:0,
       progress:{unlocked:S.progress.unlocked,stars:S.progress.stars.slice()},
       soundOn:S.soundOn,
+      parent:S.parent,
       reveal:S.screen==="levelend"?1:(inWord?S.reveal:0)
     };
   },
@@ -1179,7 +1233,10 @@ window.__test={
   hintEye(){actHintEye();},
   hintLetter(){actHintLetter();},
   next(){actNext();},
-  reset(){actReset();}
+  reset(){actReset();},
+  setParent(on){S.parent=!!on;updateParentUI();if(S.screen==="map")renderMap();},
+  parentState(){return S.parent;},
+  skipWord(){return actParentSkip();}
 };
 
 /* ============================================================
