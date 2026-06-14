@@ -220,6 +220,8 @@ button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;t
 .tile.dragging{z-index:40;position:relative;transition:none;}
 .tile.popin{animation:popin .32s cubic-bezier(.34,1.56,.64,1) both;}
 @keyframes popin{0%{transform:scale(0);}70%{transform:scale(1.08);}100%{transform:scale(1);}}
+/* плочки/слотове със срички (2 букви) — по-малък шрифт, за да се събере сричката */
+.tile.u2,.slot.u2{font-size:clamp(26px,3.4vw,34px);letter-spacing:1px;}
 .tile.taken{width:0!important;min-width:0!important;margin:0!important;padding:0!important;opacity:0;visibility:hidden;pointer-events:none;}
 .tile.bhint{animation:bhint .6s ease;}
 @keyframes bhint{0%{transform:translateY(0);}25%{transform:translateY(-10px);}50%{transform:translateY(0);}75%{transform:translateY(-6px);}100%{transform:translateY(0);}}
@@ -376,10 +378,33 @@ const LEVELS = [
     {word:"СЛАДОЛЕД",emoji:"🍦"},{word:"ПЕПЕРУДА",emoji:"🦋"},{word:"СВЕТОФАР",emoji:"🚦"}]},
   {level:12, obscure:"mix", extraLetters:4, words:[
     {word:"ТРАКТОР",emoji:"🚜"},{word:"ФЛАМИНГО",emoji:"🦩"},{word:"КОМПЮТЪР",emoji:"💻"},
-    {word:"СНЕЖИНКА",emoji:"❄️"},{word:"ПОРТОКАЛ",emoji:"🍊"},{word:"КАТЕРИЦА",emoji:"🐿️"}]}
+    {word:"СНЕЖИНКА",emoji:"❄️"},{word:"ПОРТОКАЛ",emoji:"🍊"},{word:"КАТЕРИЦА",emoji:"🐿️"}]},
+  /* === НИВА ПО СРИЧКИ === плочките са срички, не отделни букви; unit:"syllable",
+     а extraLetters тук означава брой излишни срички. syl[] е вярното разбиване. */
+  {level:13, unit:"syllable", obscure:"blur-light", extraLetters:0, words:[
+    {word:"МАМА",emoji:"👩",syl:["МА","МА"]},{word:"ТАТЕ",emoji:"👨",syl:["ТА","ТЕ"]},
+    {word:"БАБА",emoji:"👵",syl:["БА","БА"]},{word:"ДЯДО",emoji:"👴",syl:["ДЯ","ДО"]},
+    {word:"КАКА",emoji:"👧",syl:["КА","КА"]},{word:"ВОДА",emoji:"💧",syl:["ВО","ДА"]}]},
+  {level:14, unit:"syllable", obscure:"silhouette", extraLetters:1, words:[
+    {word:"РИБА",emoji:"🐟",syl:["РИ","БА"]},{word:"КОЗА",emoji:"🐐",syl:["КО","ЗА"]},
+    {word:"ЛУНА",emoji:"🌙",syl:["ЛУ","НА"]},{word:"РОЗА",emoji:"🌹",syl:["РО","ЗА"]},
+    {word:"ЗИМА",emoji:"❄️",syl:["ЗИ","МА"]},{word:"КОЛА",emoji:"🚗",syl:["КО","ЛА"]}]},
+  {level:15, unit:"syllable", obscure:"peephole-big", extraLetters:1, words:[
+    {word:"КОТЕТА",emoji:"🐱",syl:["КО","ТЕ","ТА"]},{word:"КУЧЕТА",emoji:"🐶",syl:["КУ","ЧЕ","ТА"]},
+    {word:"ПИЛЕТА",emoji:"🐤",syl:["ПИ","ЛЕ","ТА"]},{word:"ЯГОДА",emoji:"🍓",syl:["Я","ГО","ДА"]},
+    {word:"БАНАНИ",emoji:"🍌",syl:["БА","НА","НИ"]},{word:"ДОМАТИ",emoji:"🍅",syl:["ДО","МА","ТИ"]}]},
+  {level:16, unit:"syllable", obscure:"mix", extraLetters:2, words:[
+    {word:"ПЕПЕРУДА",emoji:"🦋",syl:["ПЕ","ПЕ","РУ","ДА"]},{word:"КАТЕРИЦА",emoji:"🐿️",syl:["КА","ТЕ","РИ","ЦА"]},
+    {word:"ЛИМОНАДА",emoji:"🍋",syl:["ЛИ","МО","НА","ДА"]},{word:"МАКАРОНИ",emoji:"🍝",syl:["МА","КА","РО","НИ"]},
+    {word:"МАГАРЕТО",emoji:"🫏",syl:["МА","ГА","РЕ","ТО"]},{word:"КАРАМЕЛИ",emoji:"🍬",syl:["КА","РА","МЕ","ЛИ"]}]}
 ];
 const ALPHABET=[..."АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЮЯ"]; // без Ь
+/* излишни срички за нивата по срички — само отворени (CV), познати и лесни за четене */
+const SYLLABLE_POOL=["МА","ТА","БА","ДА","НА","ЛА","РА","КА","СА","ВА","ПА","ГА","ЗА","ЦА","ЧА","ША",
+  "МО","ТО","ЛО","РО","КО","СО","ВО","ПО","ГО","ДО","НО","МУ","ЛУ","РУ","КУ","ТУ","ПУ","НУ",
+  "МИ","ЛИ","РИ","КИ","СИ","ТИ","НИ","ПИ","ВИ","МЕ","ЛЕ","РЕ","КЕ","ТЕ","НЕ","СЕ","ПЕ"];
 const MIX_MODES=["blur-strong","silhouette","peephole-small","tiles"];
+const NLEV=LEVELS.length;
 const PALETTE_N=6;
 const STORE_KEY="sglobi-dumata-v1";
 
@@ -389,10 +414,11 @@ const STORE_KEY="sglobi-dumata-v1";
 const S={
   screen:"home",            // 'home'|'map'|'play'|'win'|'levelend'
   level:null, wordIndex:null, word:null, emoji:null, mode:null,
+  units:[], step:0,           // units = вярната редица плочки (букви ИЛИ срички); step = брой подредени
   placed:"", tray:[], hintsUsed:0, reveal:0, errStreak:0,
   tileOrder:[], wordStars:[], lastLevelStars:0,
   soundOn:true,
-  progress:{unlocked:1, stars:Array(12).fill(0)}
+  progress:{unlocked:1, stars:Array(NLEV).fill(0)}
 };
 
 function loadProgress(){
@@ -400,9 +426,11 @@ function loadProgress(){
     const raw=localStorage.getItem(STORE_KEY);
     if(!raw) return;
     const p=JSON.parse(raw);
-    if(p && Number.isInteger(p.unlocked) && p.unlocked>=1 && p.unlocked<=12) S.progress.unlocked=p.unlocked;
-    if(p && Array.isArray(p.stars) && p.stars.length===12)
-      S.progress.stars=p.stars.map(v=>(Number.isInteger(v)&&v>=0&&v<=3)?v:0);
+    if(p && Number.isInteger(p.unlocked) && p.unlocked>=1 && p.unlocked<=NLEV) S.progress.unlocked=p.unlocked;
+    if(p && Array.isArray(p.stars)){
+      /* стари записи (12 нива) се запазват и допълват до текущия брой нива */
+      for(let i=0;i<NLEV;i++){const v=p.stars[i];S.progress.stars[i]=(Number.isInteger(v)&&v>=0&&v<=3)?v:0;}
+    }
     if(p && typeof p.soundOn==="boolean") S.soundOn=p.soundOn;
   }catch(e){/* file:// или повреден запис — играем без запазване */}
 }
@@ -465,7 +493,8 @@ function renderHomeFloaties(){
   }
 }
 
-const MAP_POS=[[10,80],[24,68],[38,78],[52,66],[66,76],[80,64],[86,46],[72,36],[58,44],[44,34],[30,42],[16,30]];
+const MAP_POS=[[10,82],[24,70],[38,80],[52,68],[66,78],[80,66],[86,48],[72,38],[58,46],[44,36],[30,44],[16,30],
+  [25,15],[41,13],[57,15],[73,13]];
 function renderMap(){
   const host=byId("mapArea");
   host.innerHTML="";
@@ -479,7 +508,7 @@ function renderMap(){
       host.appendChild(d);
     }
   }
-  for(let n=1;n<=12;n++){
+  for(let n=1;n<=NLEV;n++){
     const node=document.createElement("div");
     const locked=n>S.progress.unlocked;
     const stars=S.progress.stars[n-1];
@@ -531,9 +560,11 @@ function renderHints(){
   elLetterBtn.classList.toggle("off",off);
 }
 
+/* клас за плочка/слот с многобуквена единица (сричка) — задейства по-малкия шрифт */
+function unitCls(u){return (u&&u.length>1)?" u"+u.length:"";}
 function buildSlots(){
   elSlots.innerHTML="";
-  for(let i=0;i<S.word.length;i++){
+  for(let i=0;i<S.units.length;i++){
     const s=document.createElement("div");
     s.className="slot";
     elSlots.appendChild(s);
@@ -541,15 +572,16 @@ function buildSlots(){
   updateNextSlot();
 }
 function updateNextSlot(){
-  [...elSlots.children].forEach((s,i)=>s.classList.toggle("next",i===S.placed.length));
+  [...elSlots.children].forEach((s,i)=>s.classList.toggle("next",i===S.step));
 }
 function fillSlot(s,ch,ci,pop){
   /* s е конкретният слот-елемент: закъснял колбек (flyGhost) не може да
      запълни слот на ПО-НОВА дума — старите елементи са извън DOM */
   if(!s||!s.isConnected||s.parentNode!==elSlots) return;
   s.textContent=ch;
-  [...s.classList].forEach(c=>{if(/^c\d+$/.test(c))s.classList.remove(c);});
+  [...s.classList].forEach(c=>{if(/^c\d+$/.test(c)||c==="u2"||c==="u3")s.classList.remove(c);});
   s.classList.add("filled","c"+ci);
+  if(ch&&ch.length>1) s.classList.add("u"+ch.length);
   if(pop) restartClass(s,"pop");
 }
 
@@ -561,7 +593,7 @@ function buildTray(){
   elTray.innerHTML="";
   S.tray.forEach((ch,i)=>{
     const t=document.createElement("div");
-    t.className="tile popin c"+(i%PALETTE_N);
+    t.className="tile popin c"+(i%PALETTE_N)+unitCls(ch);
     t.dataset.l=ch;
     t.dataset.c=i%PALETTE_N;
     t.textContent=ch;
@@ -666,9 +698,9 @@ function renderWin(){
   clearWinTimers();
   elWinEmoji.textContent=S.emoji;
   elWinWord.innerHTML="";
-  [...S.word].forEach((ch,i)=>{
+  S.units.forEach((ch,i)=>{
     const t=document.createElement("div");
-    t.className="tile wtile c"+(i%PALETTE_N);
+    t.className="tile wtile c"+(i%PALETTE_N)+unitCls(ch);
     t.textContent=ch;
     t.style.animationDelay=(i*90)+"ms";
     elWinWord.appendChild(t);
@@ -708,7 +740,7 @@ function renderLevelEnd(){
       }
     },500+i*350));
   }
-  byId("btnNextLevel").style.display=(S.level>=12)?"none":"flex";
+  byId("btnNextLevel").style.display=(S.level>=NLEV)?"none":"flex";
   show("scrEnd");
   sndLevelFanfare();
   confetti(3500,180);
@@ -724,6 +756,7 @@ function updateSoundBtns(){
    ============================================================ */
 function clearWordState(){
   S.wordIndex=null;S.word=null;S.emoji=null;S.mode=null;
+  S.units=[];S.step=0;
   S.placed="";S.tray=[];S.hintsUsed=0;S.errStreak=0;S.tileOrder=[];
   stopBounce();
 }
@@ -739,7 +772,7 @@ function actHome(){
   updateSoundBtns();show("scrHome");mascotDo("m-hi");
 }
 function actOpenLevel(n){
-  if(!Number.isInteger(n)||n<1||n>12||n>S.progress.unlocked) return false;
+  if(!Number.isInteger(n)||n<1||n>NLEV||n>S.progress.unlocked) return false;
   stopBounce();clearWinTimers();
   S.level=n;S.wordIndex=0;S.wordStars=[];
   startWord();
@@ -748,22 +781,28 @@ function actOpenLevel(n){
 function startWord(){
   stopBounce();
   const L=LEVELS[S.level-1], W=L.words[S.wordIndex];
+  const isSyl=L.unit==="syllable";
   S.word=W.word;S.emoji=W.emoji;
+  /* единиците са срички (ако са зададени) или отделни букви */
+  S.units=isSyl&&Array.isArray(W.syl)?W.syl.slice():[...W.word];
+  S.step=0;
   S.mode=(L.obscure==="mix")?MIX_MODES[Math.floor(Math.random()*MIX_MODES.length)]:L.obscure;
   S.placed="";S.hintsUsed=0;S.errStreak=0;S.reveal=0.1;
   S.tileOrder=shuffle([0,1,2,3,4,5,6,7,8]);
-  S.tray=makeTray(W.word,L.extraLetters);
+  S.tray=makeTray(S.units,L.extraLetters,isSyl);
   S.screen="play";
   renderPlay();show("scrPlay");
 }
-function makeTray(word,extra){
-  const letters=[...word];
-  /* излишните букви — само такива, които ги НЯМА в думата */
-  const pool=shuffle(ALPHABET.filter(c=>!letters.includes(c)));
-  const tray=letters.concat(pool.slice(0,extra));
+function makeTray(units,extra,isSyl){
+  const correct=units.slice();
+  /* излишните единици — само такива, които ги НЯМА в думата (букви или срички) */
+  const src=isSyl?SYLLABLE_POOL:ALPHABET;
+  const pool=shuffle(src.filter(u=>!units.includes(u)));
+  const tray=correct.concat(pool.slice(0,extra));
   let guard=0;
+  /* да не се падне случайно подредена в началото */
   do{shuffle(tray);}
-  while(tray.length>1&&tray.slice(0,word.length).join("")===word&&++guard<60);
+  while(tray.length>1&&tray.slice(0,units.length).join("")===units.join("")&&++guard<60);
   return tray;
 }
 
@@ -774,19 +813,20 @@ function tryLetter(ch,tileEl){
   const ti=S.tray.indexOf(ch);
   if(ti<0) return false;
   const el=tileEl||findTrayTile(ch);
-  if(ch===S.word[S.placed.length]){
-    /* вярна буква — state синхронно */
+  if(ch===S.units[S.step]){
+    /* вярна единица (буква или сричка) — state синхронно */
     S.tray.splice(ti,1);
-    S.placed+=ch;
+    S.step++;
+    S.placed=S.units.slice(0,S.step).join("");
     S.errStreak=0;
     stopBounce();
-    const done=S.placed===S.word;
-    S.reveal=done?1:Math.min(0.95,S.reveal+0.7/S.word.length);
+    const done=S.step===S.units.length;
+    S.reveal=done?1:Math.min(0.95,S.reveal+0.7/S.units.length);
     if(done) finishWord();          /* screen='win' синхронно */
     fxCorrect(el,done);             /* козметика */
     return true;
   }
-  /* грешна буква — мека реакция, нищо не се губи */
+  /* грешна единица — мека реакция, нищо не се губи */
   S.errStreak++;
   fxWrong(el);
   return false;
@@ -801,7 +841,7 @@ function finishWord(){
     const avg=S.wordStars.reduce((a,b)=>a+b,0)/total;
     S.lastLevelStars=Math.max(1,Math.round(avg));
     S.progress.stars[S.level-1]=Math.max(S.progress.stars[S.level-1],S.lastLevelStars);
-    S.progress.unlocked=Math.max(S.progress.unlocked,Math.min(S.level+1,12));
+    S.progress.unlocked=Math.max(S.progress.unlocked,Math.min(S.level+1,NLEV));
     saveProgress();
   }
 }
@@ -815,7 +855,7 @@ function actHintEye(){
 function actHintLetter(){
   if(S.screen!=="play"||S.hintsUsed>=2) return;
   S.hintsUsed++;renderHints();
-  tryLetter(S.word[S.placed.length],null); /* може да завърши думата */
+  tryLetter(S.units[S.step],null); /* може да завърши думата */
 }
 
 function actNext(){
@@ -835,7 +875,7 @@ function actNext(){
 
 function actReset(){
   try{localStorage.removeItem(STORE_KEY);}catch(e){}
-  S.progress={unlocked:1,stars:Array(12).fill(0)};
+  S.progress={unlocked:1,stars:Array(NLEV).fill(0)};
   S.soundOn=true;
   if(master)master.gain.value=1;
   updateSoundBtns();
@@ -862,7 +902,7 @@ function stopBounce(){
 }
 function doBounceHint(){
   if(S.screen!=="play"||S.errStreak<3){stopBounce();return;}
-  const t=findTrayTile(S.word[S.placed.length]);
+  const t=findTrayTile(S.units[S.step]);
   if(t) restartClass(t,"bhint");
 }
 
@@ -872,8 +912,8 @@ function doBounceHint(){
 function fxCorrect(el,done){
   sndCorrect();
   mascotDo("m-joy");
-  const i=S.placed.length-1;
-  const ch=S.placed[i];
+  const i=S.step-1;
+  const ch=S.units[i];
   const ci=el?+el.dataset.c:(i%PALETTE_N);
   const slot=elSlots.children[i];
   if(done){
@@ -1123,6 +1163,8 @@ window.__test={
       level:(inWord||S.screen==="levelend")?S.level:null,
       wordIndex:inWord?S.wordIndex:null,
       word:inWord?S.word:null,
+      units:inWord?S.units.slice():[],
+      step:inWord?S.step:0,
       placed:inWord?S.placed:"",
       tray:inWord?S.tray.slice():[],
       hintsUsed:inWord?S.hintsUsed:0,
