@@ -47,6 +47,12 @@ button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;t
 .top-left{position:absolute;top:16px;left:16px;}
 
 /* ============================== HOME ============================== */
+#btnIsland{position:absolute;top:16px;left:16px;width:84px;height:84px;border-radius:50%;z-index:3;
+  background:linear-gradient(160deg,#8DEBE4,#35BCD0);font-size:46px;line-height:1;display:flex;align-items:center;justify-content:center;
+  text-decoration:none;box-shadow:0 6px 0 #1B8FB5,0 10px 22px rgba(20,80,110,.3);animation:islandbob 2.2s ease-in-out infinite;}
+#btnIsland::after{content:"⭐";position:absolute;right:-6px;top:-8px;font-size:26px;}
+#btnIsland:active{transform:scale(.92);animation:none;}
+@keyframes islandbob{50%{transform:translateY(-6px) rotate(-4deg);}}
 #scrHome .title{
   font-size:clamp(48px,8vw,96px);color:#6B4226;margin:0 0 8px;
   text-shadow:0 4px 0 rgba(255,255,255,.6);text-align:center;z-index:2;
@@ -284,6 +290,7 @@ button{font-family:inherit;text-transform:uppercase;border:none;cursor:pointer;t
 <!-- ============================== HOME ============================== -->
 <section id="scrHome" class="screen active">
   <div id="floaties"></div>
+  <a id="btnIsland" href="ostrov/index.html" aria-label="островът на Капи">🏝️</a>
   <h1 class="title">СГЛОБИ ДУМАТА</h1>
   <div class="mascot" id="mascotHome"><span class="owl">🦉</span></div>
   <button id="btnPlay" aria-label="играй">▶</button>

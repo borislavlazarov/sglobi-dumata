@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Островът на Капи</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏝️</text></svg>">
+<link rel="stylesheet" href="core.css">
+</head>
+<body>
+
+<!-- HOME -->
+<section id="scrHome" class="screen active">
+  <a class="rbtn tl" id="btnOwl" href="../index.html" aria-label="към совата">🦉</a>
+  <button class="rbtn tr sndbtn" aria-label="звук">🔊</button>
+  <h1 class="title">ОСТРОВЪТ<br>НА КАПИ</h1>
+  <div class="capy-slot" id="capyHome"></div>
+  <div class="home-btns">
+    <button id="btnGallery" class="bigbtn pink" aria-label="оцветяване">🎨</button>
+    <button id="btnPlay" class="bigbtn go" aria-label="играй">▶</button>
+  </div>
+  <div class="pearls" id="homePearls"></div>
+  <button id="btnParent" aria-label="за родители">⚙</button>
+</section>
+
+<!-- MAP -->
+<section id="scrMap" class="screen">
+  <div class="topbar">
+    <button class="rbtn" id="btnMapHome" aria-label="начало">⌂</button>
+    <div class="pearls" id="mapPearls"></div>
+    <button class="rbtn sndbtn" aria-label="звук">🔊</button>
+  </div>
+  <div id="mapGrid"></div>
+  <div id="practiceRow"></div>
+</section>
+
+<!-- PLAY (round runner) -->
+<section id="scrPlay" class="screen">
+  <div class="topbar">
+    <button class="rbtn" id="btnQuit" aria-label="карта">🗺</button>
+    <div id="roundDots"></div>
+    <div id="streak" aria-label="спокойна серия"></div>
+    <button class="rbtn" id="btnReplay" aria-label="чуй пак">👂</button>
+  </div>
+  <div id="stage"></div>
+  <div class="capy-slot small" id="capyPlay"></div>
+</section>
+
+<!-- LEVEL END -->
+<section id="scrEnd" class="screen">
+  <div id="endStars"></div>
+  <div class="capy-slot" id="capyEnd"></div>
+  <div id="endReward"></div>
+  <div class="home-btns">
+    <button id="btnEndMap" class="bigbtn" aria-label="карта">🗺</button>
+    <button id="btnEndColor" class="bigbtn pink" aria-label="оцвети">🎨</button>
+    <button id="btnEndNext" class="bigbtn go" aria-label="напред">▶</button>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="scrGallery" class="screen">
+  <div class="topbar">
+    <button class="rbtn" id="btnGalHome" aria-label="начало">⌂</button>
+    <div class="pearls" id="galPearls"></div>
+    <button class="rbtn sndbtn" aria-label="звук">🔊</button>
+  </div>
+  <div id="galGrid"></div>
+</section>
+
+<!-- COLORING (filled by color.js) -->
+<section id="scrColor" class="screen"><div id="colorRoot"></div></section>
+
+<!-- PARENT PANEL -->
+<section id="scrParent" class="screen">
+  <div class="panel">
+    <h2>За родители</h2>
+    <p>Английски букви, които детето вече учи:</p>
+    <div id="parLetters"></div>
+    <p>Малки букви в четенето:</p>
+    <div id="parLower" class="seg"></div>
+    <label class="chk"><input type="checkbox" id="parUnlock"> Отключи всички нива и картинки</label>
+    <div class="row">
+      <button id="parReset" class="txtbtn warn">Изтрий прогреса</button>
+      <button id="parClose" class="txtbtn">Готово</button>
+    </div>
+  </div>
+</section>
+
+<div id="calmOverlay"><div class="capy-slot" id="capyCalm"></div><div class="breath"></div></div>
+<canvas id="confetti"></canvas>
+
+<script src="core.js"></script>
+<script src="audio/manifest.js"></script>
+<script src="levels.js"></script>
+<script src="act-read.js"></script>
+<script src="act-spell.js"></script>
+<script src="act-case.js"></script>
+<script src="act-abc.js"></script>
+<script src="act-math.js"></script>
+<script src="act-memory.js"></script>
+<script src="act-odd.js"></script>
+<script src="act-dance.js"></script>
+<script src="act-calm.js"></script>
+<script src="color.js"></script>
+<script src="pages-1.js"></script>
+<script src="pages-2.js"></script>
+<script src="pages-3.js"></script>
+<script>Capy.boot();</script>
+</body>
+</html>
